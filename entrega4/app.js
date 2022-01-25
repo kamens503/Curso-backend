@@ -100,4 +100,6 @@ app.use(express.static(__dirname + "/public"));
 app.use("/api", api);
 app.listen(port, () => {
     console.log(`Escuchando en http://localhost:${port}`)
-  })
+  }).on('error', e => {
+      console.log(e);
+  });
