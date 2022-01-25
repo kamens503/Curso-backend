@@ -1,0 +1,19 @@
+{
+    "1": {
+        "title": "Manzana",
+        "price": 5000,
+        "thumbnail": "http://localhost:8080/img/manzana.png"
+    },
+    "2": {
+        "title": "Pera",
+        "price": 4200,
+        "thumbnail": "http://localhost:8080/img/pera.jpg"
+
+    },
+    "3": {
+        "title": "Patilla",
+        "price": 5600,
+        "thumbnail": "http://localhost:8080/img/sandia.jpg"
+    },
+    "objects": 3
+}
