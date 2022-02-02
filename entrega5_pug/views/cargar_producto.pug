@@ -1,0 +1,14 @@
+htlm 
+    include includes/header
+    body
+        form.bg-slate-800.mx-auto.text-center( class="w-1/5" action="/api/productos" method="post")
+            h2.font-bold.text-white.py-5 Cargar producto nuevo
+            input.inline-block.my-2(type="text" name="title" placeholder="Título")
+            br
+            input.inline-block.my-2(type="number" name="price" placeholder="Precio")
+            br
+            input.inline-block.my-2(type="url" name="thumbnail" placeholder="Url de imagen")
+            br
+            input.inline-block.my-2.text-color-black.bg-white.px-10.py-1.mb-5(type="submit" value="Enviar")
+            if data
+            h5.text-center.text-emerald-300.pb-5=data

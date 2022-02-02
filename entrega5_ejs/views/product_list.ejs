@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./includes/header'); %>
+<body>
+    <%- include('./includes/nav'); %>
+    <table id="customers" class="table-auto bg-slate-200 mx-auto w-1/3">
+        <tr class="bg-slate-700 py-5">
+            <% const titles = ["Imagen","Nombre","Precio"].forEach(  title => {%>
+                <th class="text-white"><%- title %></th>
+            <%});%>
+        </tr>
+        <% Object.values(data).forEach(product => {%>
+            <tr class="border-2 border-b-slate-500" >
+                <td class="text-center w-24 h-24">
+                    <img src="<%- product.thumbnail %>" alt="" class="h-full w-full object-cover inline-block">
+                </td>
+                <td>
+                    <p><%- product.title %></p>
+                </td>
+                <td class="text-center w-24">
+                    <p class="text-bold"><%- product.price %></p>
+                </td>
+            </tr>
+        <%});%>
+    </table>
+</body>
+</html>

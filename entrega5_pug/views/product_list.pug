@@ -1,0 +1,16 @@
+html
+    include includes/header
+    - const titles = ["Imagen","Nombre","Precio"]
+    body
+        table#customers.table-auto.bg-slate-200.mx-auto(class="w-1/3")
+            tr.bg-slate-700.py-5
+                each title in titles
+                    th.text-white #{title}
+            each product in data
+                tr.border-2.border-b-slate-500
+                    td.text-center.w-24.h-24
+                        img.h-full.w-full.object-cover.inline-block(src=product.thumbnail)
+                    td
+                        p #{product.title}
+                    td.text-center.w-24
+                        p.text-bold #{product.price}

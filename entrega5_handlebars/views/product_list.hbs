@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carga del producto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <nav class="mx-auto px-4 w-full text-left py-5 bg-slate-200 mb-10">
+        <a href="productos" class="ml-10 font-bold">Lista de productos</a>
+        <a href="subir_productos" class="ml-10 font-bold">Cargar Producto</a>
+    </nav>
+    <table id="customers" class="table-auto bg-slate-200 mx-auto w-1/3">
+        <tr class="bg-slate-700 py-5">
+            {{#each ["Imagen","Nombre","Precio"]}}
+                <th class="text-white">{{this}}</th>
+            {{/each}}
+        </tr>
+        {{#each data}}
+            <tr class="border-2 border-b-slate-500" >
+                <td class="text-center w-24 h-24">
+                    <img src="{{this.thumbnail}}" alt="" class="h-full w-full object-cover inline-block">
+                </td>
+                <td>
+                    <p>{{this.title}}</p>
+                </td>
+                <td class="text-center w-24">
+                    <p class="text-bold">{{this.price}}</p>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</body>
+</html>
