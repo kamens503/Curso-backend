@@ -11,9 +11,9 @@ const productos = new Contenedor('productos');
 
 app.engine(
     "hbs",
-    handlebars({
+    handlebars.engine({
         extname: ".hbs",
-        defaultLayout: 'index.hbs',
+        defaultLayout: 'product_list.hbs',
     })
 );
 app.set("view engine", "hbs");
