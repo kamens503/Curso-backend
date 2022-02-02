@@ -27,6 +27,7 @@ app.get('/', (req, res) => {
 api.get('/productos', (req, res) => {
     console.log(productos.data);
     const data = productos.data;
+    delete data.objects
     res.render('product_list',{data})
 
 });
