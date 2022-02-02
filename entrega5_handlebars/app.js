@@ -13,7 +13,7 @@ app.engine(
     "hbs",
     handlebars.engine({
         extname: ".hbs",
-        defaultLayout: 'product_list.hbs',
+        defaultLayout: 'index.hbs',
     })
 );
 app.set("view engine", "hbs");
