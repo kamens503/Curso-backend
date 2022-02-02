@@ -1,29 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carga del producto</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-    <nav class="mx-auto px-4 w-full text-left py-5 bg-slate-200 mb-10">
-        <a href="productos" class="ml-10 font-bold">Lista de productos</a>
-        <a href="subir_productos" class="ml-10 font-bold">Cargar Producto</a>
-    </nav>
-    
-    <form class="bg-slate-800 mx-auto text-center w-1/5" action="/api/productos" method="post">
-        <h2 class="font-bold text-white py-5">Cargar Producto nuevo</h2>
-        <input class="inline-block my-2" type="text" name="title" placeholder="Título">
-        <br>
-        <input class="inline-block my-2" type="number" name="price" placeholder="Precio">
-        <br>
-        <input class="inline-block my-2" type="url" name="thumbnail" placeholder="Url de la imagen">
-        <br>
-        <input class="inline-block my-2 text-color-black bg-white px-10 py-1 mb-5" type="submit" value="Enviar">
-        <br>
-        <h5 class="text-center text-emerald-300 pb-5">{{status = data ? data : ""}}</h5>
-    </form>
-</body>
-</html>
+<form class="bg-slate-800 mx-auto text-center w-1/5" action="/api/productos" method="post">
+    <h2 class="font-bold text-white py-5">Cargar Producto nuevo</h2>
+    <input class="inline-block my-2" type="text" name="title" placeholder="Título">
+    <br>
+    <input class="inline-block my-2" type="number" name="price" placeholder="Precio">
+    <br>
+    <input class="inline-block my-2" type="url" name="thumbnail" placeholder="Url de la imagen">
+    <br>
+    <input class="inline-block my-2 text-color-black bg-white px-10 py-1 mb-5" type="submit" value="Enviar">
+    <br>
+    <h5 class="text-center text-emerald-300 pb-5"></h5>
+</form>
