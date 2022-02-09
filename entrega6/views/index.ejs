@@ -24,15 +24,15 @@
                     </tr>
                 <%});%>
             </table>
-            <form class="bg-slate-800 w-1/6 flex flex-col p-12 ml-10">
+            <form class="bg-slate-800 w-1/6 flex flex-col p-12 ml-10" id="product-form">
                 <h2 class="font-bold text-white py-5">Cargar Producto nuevo</h2>
-                <input class="inline-block my-2" type="text" name="title" placeholder="Título">
+                <input class="inline-block mb-2" type="text" name="title" placeholder="Título">
                 <br>
-                <input class="inline-block my-2" type="number" name="price" placeholder="Precio">
+                <input class="inline-block mb-2" type="number" name="price" placeholder="Precio">
                 <br>
-                <input class="inline-block my-2" type="url" name="thumbnail" placeholder="Url de la imagen">
+                <input class="inline-block mb-2" type="url" name="thumbnail" placeholder="Url de la imagen">
                 <br>
-                <input class="inline-block my-2 text-color-black bg-white px-10 py-1 mb-5" type="submit" value="Enviar">
+                <input class="inline-block mb-2 text-color-black bg-white px-10 py-1 mb-5" type="submit" value="Enviar">
                 <br>
                 <h5 class="text-center text-emerald-300 pb-5"><%- status %></h5>
             </form>
@@ -45,7 +45,7 @@
                     <input type="mail" name="mail" id="mail" class="mb-2">
                     <br>
                     <label for="msg" >Mensaje</label><br>
-                    <textarea name="msg" id="" class="w-full " rows="3"></textarea>
+                    <textarea name="msg" id="msg" class="w-full " rows="3"></textarea>
                     <br>
                     <input class="mt-5 inline-block my-2 text-white bg-slate-700 px-10 py-1 mb-5" type="submit" value="Enviar">
                 </form>
