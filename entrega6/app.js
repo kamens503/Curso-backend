@@ -51,7 +51,7 @@ socket.on('add_product', data =>{
     if(data.title && data.thumbnail && data.price){
         product.save(data)
         io.sockets.emit('product_added',{ id:data.id})
-        socket.emit('product_added',data.id)
+        socket.emit('product_added',{products: product.data, success: 'Cargado con éxito'})
     }else{
         socket.emit('product_added',{error: 'Error: Faltaron datos'})
     }

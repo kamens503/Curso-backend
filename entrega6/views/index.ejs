@@ -10,6 +10,7 @@
                         <th class="text-white"><%- title %></th>
                     <%});%>
                 </tr>
+                <span id="content-table">
                 <% Object.values(data).forEach(product => {%>
                     <tr class="border-2 border-b-slate-500" >
                         <td class="text-center w-24 h-24">
@@ -23,6 +24,7 @@
                         </td>
                     </tr>
                 <%});%>
+                </span>
             </table>
             <form class="bg-slate-800 w-1/6 flex flex-col p-12 ml-10" id="product-form">
                 <h2 class="font-bold text-white py-5">Cargar Producto nuevo</h2>
@@ -34,7 +36,7 @@
                 <br>
                 <input class="inline-block mb-2 text-color-black bg-white px-10 py-1 mb-5" type="submit" value="Enviar">
                 <br>
-                <h5 class="text-center text-emerald-300 pb-5"><%- status %></h5>
+                <h5 class="text-center text-emerald-300 pb-5" id="status"><%- status %></h5>
             </form>
             <div id="chat-wrapper" class="w-1/3 ml-10 flex flex-col bg-slate-200 p-12">
                 <h1 class="font-bold">Chat Websocket</h1>

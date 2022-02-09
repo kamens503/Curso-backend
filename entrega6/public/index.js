@@ -33,5 +33,27 @@ const product_form= document.querySelector('#product-form').addEventListener('su
     const price = document.querySelector('#price').value,
           title = document.querySelector('#title').value,
           thumbnail = document.querySelector('#thumbnail').value;
-    socket.emit('message_send', {price,title,thumbnail})
+    socket.emit('add_product', {price,title,thumbnail})
 });
+
+socket.on('product_added', data => {
+    const status = data.success || data.error || '';
+    document.querySelector('#status').innerHTML = status;
+    
+    if (!data.error) return;
+    let html = '';
+    Object.values(data.products).forEach(product => {
+        html += `<tr class="border-2 border-b-slate-500" >
+            <td class="text-center w-24 h-24">
+                <img src="${product.thumbnail}" alt="" class="h-full w-full object-cover inline-block">
+            </td>
+            <td>
+                <p>${product.title}</p>
+            </td>
+            <td class="text-center w-24">
+                <p class="text-bold">${product.price}</p>
+            </td>
+        </tr>`
+    })
+    document.querySelector('#content-table').innerHTML = html;
+})
