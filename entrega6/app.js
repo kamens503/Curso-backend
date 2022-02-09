@@ -37,9 +37,11 @@ console.log('Usuario conectado');
 socket.emit('render_history',chat.data);
 socket.on('message_send', data =>{
     console.log(data);
-    chat.save(data)
-    io.sockets.emit('render_history',messages)
-    socket.emit('render_history',messages)
+    chat.save(data);
+    const _data = chat.data
+    delete _data.objects
+    io.sockets.emit('render_history',_data)
+    socket.emit('render_history',_data)
 })
 
 //PRODUCT
