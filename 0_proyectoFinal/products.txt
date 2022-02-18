@@ -1,0 +1,1 @@
+{"idPool":2,"products":[{"timestamp":1645149957226,"name":"Shampoo","description":"Para lavarse el pelo","sku":123,"img":"algo","price":55,"stock":1,"id":0},{"name":"Jabón","description":"Para bañarse","sku":5,"img":"masalgo","price":20,"stock":2,"id":1,"timestamp":1645151224702}]}
