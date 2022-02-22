@@ -1,7 +1,7 @@
 class User {
-    constructor({mail, isAdmin}){
-        this.cart = cart
-        this._mail = mail
+    constructor({name, isAdmin, id}){
+        this._id = id
+        this._name = name
         this._can = {
             read: {
                 product: true,
@@ -13,13 +13,17 @@ class User {
             },
             create: {
                 product: isAdmin ? true : false,
-                cart: false
+                cart: true
             },
             delete: {
                 product: isAdmin ? true : false,
-                cart: false
+                cart: true
             }
         }
-        this.can = ({operation, type}) => this._can[operation][type]
     }
+    can = (operation, type) => this._can[operation][type]
+    getId = () => this._id
+    getName = () => this._name
 }
+
+module.exports = User

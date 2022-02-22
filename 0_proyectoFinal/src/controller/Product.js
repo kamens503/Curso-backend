@@ -20,7 +20,7 @@ class Product {
         }
         this.template = {
             id: 0,
-            timestamp: 0,
+            timestamp: Date.now(),
             name: '',
             description: '',
             sku: 0,
@@ -38,58 +38,73 @@ class Product {
     }
     rewrite = () => {
         try {
-            this.fs.writeFileSync(`./${this.filename}.txt`,JSON.stringify(this.data)); 
+            this.fs.writeFileSync(`./${this.filename}.txt`,JSON.stringify(this.data))
+            return {done: true, result: this.on.default.success}
         } catch (error) {
-          console.error(`No se pudo reescribir archivo: ${error}`);  
+            console.log(error);
+            return {done: false, result: `Algo salió mal! No se pudo sobreescribir el archivo ${error}`}
         }
     } 
 
     isPossible = (can, id = false) => {
-        let possible = false
-        if (id) {
-            possible = this.data.products[id] ? true : this.on.notFound
+        const exist =this.data.products.find(product => product.id === id) ? this.data.products.find(product => product.id === id) : false
+        console.log({exist: exist});
+        if (id && !exist || exist && undefined) {
+            return false
         }
-        possible = can ? true : this.on.denied
-        return possible
+        return can ? true : this.on.denied
     }
 
     create = (can, product) =>{
         if(!this.isPossible(can) === true) return this.isPossible(can,id)
         const id = this.data.idPool++
+
         product.id = id
         product.timestamp = Date.now()
-        let productPos = this.data.products.push(this.template)
-        this.data.products[--productPos].id = id
-        
-        return this.update(can, product)
+
+        const newProduct = {...this.template, ...product }
+        this.data.products.push(newProduct)
+
+        const msg = this.rewrite()
+        return msg.done ? {done: msg.done , result: this.on.modified.success}
+                    : {done: msg.done, result: msg.result}
 
     }
-
+    
     get = (can, id=false) =>{
+
+        if(!this.isPossible(can,id) === true) return {done: false, result: this.isPossible(can,id)} 
+        const result = id ? {done: true, 
+                             result: this.data.products.find(product => product.id === id) }
+                          : {done: true, result: this.data.products }
+        return result
+    }
+
+    getIndex = (id) =>{
+        const result = this.data.products.findIndex(product => product.id === id)
+        return result
+    }
+
+    update = (can, id, productObj) =>{
         if(!this.isPossible(can,id) === true) return this.isPossible(can,id)
 
-        return id ? this.data.products[id] : this.data.products
-    }
+        const index = this.getIndex(id).result
+        console.log(index);
+        productObj.timestamp = Date.now()
 
-    update = (can, product) =>{
-        if(!this.isPossible(can,product.id) === true) return this.isPossible(can,id)
+        this.data.products[index] = {...this.data.products[index], ...productObj }
+
+        console.log(this.data.products[index]);
 
 
-        let error = false;
-        this.data.products[product.id] = {}
-        Object.keys(product).forEach( i => {
-            let prop = i in this.template ? product[i] : false;
-            if (!prop && prop !== 0) { error = true; return } 
-            this.data.products[product.id][i] = prop
-        })
-
-        if (error) return this.on.modified.fail
-        this.rewrite()
-        return this.on.modified.success
+        const msg = this.rewrite()
+        return msg.done ? {done: msg.done , result: this.on.modified.success}
+                    : {done: msg.done, result: msg.result}
     }
 
     delete = (can, id=false) => {
-        if(!this.isPossible(can,id) === true) return this.isPossible(can,id)
+        console.log({can, id});
+        
 
         if(id === 'ALL') {
             try {
@@ -101,21 +116,12 @@ class Product {
                 return this.on.deleted.fail
             }
         }
-        delete this.data[id]
-        this.rewrite()
-        return this.on.deleted.success
+        if(!this.isPossible(can,id) === true) return this.isPossible(can,id)
+        console.log({index: this.getIndex(id), data: this.data.products[this.getIndex(id)]});
+        delete this.data.products[this.getIndex(id)]
+        const msg = this.rewrite()
+        return msg.done ? {done: true, result: this.on.deleted.success} : {done: false, result: this.on.deleted.fail}
     }
-}
-
-template = {
-    id: 0,
-    timestamp: 0,
-    name: '',
-    description: '',
-    sku: 0,
-    img: '',
-    price: 0,
-    stock: 0
 }
 
 module.exports = Product

@@ -1,0 +1,1 @@
+{"idPool":2,"products":[{"name":"Prueba","sku":1235,"img":"www.google.com","description":"Descripción de prueba","price":123,"stock":5,"id":0,"timestamp":1645507017747},{"name":"Prueba","sku":1235,"img":"www.google.com","description":"Descripción de prueba","price":123,"stock":5,"id":1,"timestamp":1645507082330}]}
