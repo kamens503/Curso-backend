@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./includes/header'); %>
+    <body>
+        <%- include('./includes/nav'); %>
+        <article class="flex justify-center" id="wrapper">
+            <table id="products" class="table-auto inline-table bg-slate-200 w-1/3">
+                <tr class="bg-slate-700 py-5 h-10">
+                    <% const titles = ["Imagen","Nombre","Precio","Borrar"].forEach(  title => {%>
+                        <th class="text-white"><%- title %></th>
+                    <%});%>
+                </tr>
+                <span id="content-table">
+                <% let product_id =0 %> 
+                <% Object.values(data).forEach(product => { if(!product.title) return;%>
+                    <tr class="border-2 border-b-slate-500">
+                        <td class="text-center w-24 h-24">
+                            <img src="<%- product.thumbnail %>" alt="" class="h-full w-full object-cover inline-block">
+                        </td>
+                        <td class="text-left">
+                            <p class="ml-12"><%- product.title %></p>
+                        </td>
+                        <td class="text-center w-24">
+                            <p class="text-bold"><%- product.price %></p>
+                        </td>
+                        <td class="text-center">
+                            <button data-id="<%- ++product_id %>" class="delete-btn font-bold text-slate-900 py-1 px-2 bg-slate-500">X</button>
+                        </td>
+                    </tr>
+                <%});%>
+                </span>
+            </table>
+            <form class="bg-slate-800 w-1/6 flex flex-col p-12 ml-10" id="product-form">
+                <h2 class="font-bold text-white py-5">Cargar Producto nuevo</h2>
+                <input class="inline-block mb-2" type="text" name="title" placeholder="Título" id="title">
+                <br>
+                <input class="inline-block mb-2" type="number" name="price" placeholder="Precio" id="price">
+                <br>
+                <input class="inline-block mb-2" type="url" name="thumbnail" placeholder="Url de la imagen" id="thumbnail">
+                <br>
+                <input class="inline-block mb-2 text-color-black bg-white px-10 py-1 mb-5" type="submit" value="Enviar">
+                <br>
+                <h5 class="text-center text-emerald-300 pb-5" id="status"><%- status %></h5>
+            </form>
+            <div id="chat-wrapper" class="w-1/3 ml-10 flex flex-col bg-slate-200 p-12">
+                <h1 class="font-bold">Chat Websocket</h1>
+                <div id="history" class="w-full h-80 bg-slate-100"></div>
+                <span class="h-10"></span>
+                <form id="form">
+                    <label for="mail">Corre Electrónico</label><br>
+                    <input type="mail" name="mail" id="mail" class="mb-2">
+                    <br>
+                    <label for="msg" >Mensaje</label><br>
+                    <textarea name="msg" id="msg" class="w-full " rows="3"></textarea>
+                    <br>
+                    <input class="mt-5 inline-block my-2 text-white bg-slate-700 px-10 py-1 mb-5" type="submit" value="Enviar">
+                </form>
+            </div>
+        </article>   
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/index.js"></script>
+</html>
+
+<style>
+    @media screen and (max-width: 1360px){
+        #wrapper {
+        flex-direction: column;
+        align-items: center;
+        }
+        #wrapper > table, #wrapper > div, #wrapper > form {
+            width: 90% !important;
+            margin: 2rem auto
+        }
+    }
+    
+</style>
