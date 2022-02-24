@@ -47,12 +47,19 @@ class Product {
     } 
 
     isPossible = (can, id = false) => {
-        const exist =this.data.products.find(product => product.id === id) ? this.data.products.find(product => product.id === id) : false
-        console.log({exist: exist});
-        if (id && !exist || exist && undefined) {
-            return false
-        }
-        return can ? true : this.on.denied
+        if (id) {
+            const exist =this.data.products.find(product => product?.id === id) 
+                        ? this.data.products.find(product => product?.id === id) 
+                        : false
+
+            console.log({exist: exist});
+            if (id && !exist || exist && undefined) {
+                return {done: false, result: this.on.notFound}
+            }   
+        }  
+
+        
+        return can ? true : { done: false, result: this.on.denied }
     }
 
     create = (can, product) =>{
@@ -75,13 +82,13 @@ class Product {
 
         if(!this.isPossible(can,id) === true) return {done: false, result: this.isPossible(can,id)} 
         const result = id ? {done: true, 
-                             result: this.data.products.find(product => product.id === id) }
+                             result: this.data.products.find(product => product?.id === id) }
                           : {done: true, result: this.data.products }
         return result
     }
 
     getIndex = (id) =>{
-        const result = this.data.products.findIndex(product => product.id === id)
+        const result = this.data.products.findIndex(product => product?.id === id)
         return result
     }
 
@@ -104,11 +111,9 @@ class Product {
 
     delete = (can, id=false) => {
         console.log({can, id});
-        
-
         if(id === 'ALL') {
             try {
-                this.fs.unlink(`./${this.filename}.txt`);
+                this.fs.unlinkSync(`./${this.filename}.txt`);
                 delete this.data;
                 return this.on.deleted.success
                 
@@ -116,7 +121,10 @@ class Product {
                 return this.on.deleted.fail
             }
         }
-        if(!this.isPossible(can,id) === true) return this.isPossible(can,id)
+        if(this.isPossible(can,id) !== true) {
+            console.log(this.isPossible(can,id));
+            return this.isPossible(can,id)
+        }
         console.log({index: this.getIndex(id), data: this.data.products[this.getIndex(id)]});
         delete this.data.products[this.getIndex(id)]
         const msg = this.rewrite()

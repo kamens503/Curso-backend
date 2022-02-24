@@ -49,16 +49,23 @@ class Cart {
     } 
 
     isPossible = (can, id = false) => {
-        const exist =this.data.products.find(product => product.id === id) ? this.data.products.find(product => product.id === id) : false
-        console.log({exist: exist});
-        if (id && !exist || exist && undefined) {
-            return false
-        }
-        return can ? true : this.on.denied
+        if (id) {
+            const exist =this.data.products.find(product => product?.id === id) 
+                        ? this.data.products.find(product => product?.id === id) 
+                        : false
+
+            console.log({exist: exist});
+            if (id && !exist || exist && undefined) {
+                return {done: false, result: this.on.notFound}
+            }   
+        }  
+
+        
+        return can ? true : { done: false, result: this.on.denied }
     }
 
     create = (can, product) =>{
-        if(!this.isPossible(can) === true) return this.isPossible(can,id)
+        if(!this.isPossible(can) === true) return this.isPossible(can)
         const id = this.data.idPool++
 
         product.id = id
@@ -74,11 +81,15 @@ class Cart {
     }
     
     get = (can, id=false) =>{
-
+        console.log('Accessing Get method');
         if(!this.isPossible(can,id) === true) return {done: false, result: this.isPossible(can,id)} 
         const result = id ? {done: true, 
-                             result: this.data.products.find(product => product.id === id) }
+                             result: this.data.products.find(product => product?.id === id) }
                           : {done: true, result: this.data.products }
+
+        if (!result.result) {
+            return { done: false, result: this.on.notFound }
+        }
         return result
     }
 
@@ -110,13 +121,14 @@ class Cart {
 
         if(id === 'ALL') {
             try {
-                this.fs.unlink(`./${this.filename}.txt`);
-                delete this.data;
-                return this.on.deleted.success
+                this.fs.unlinkSync(`${this.id}_${this.user}.txt`);
+                
                 
             } catch (error) {
-                return this.on.deleted.fail
+                return {done:false, result: `${this.on.deleted.fail} : ${error}`}
             }
+            delete this.data;
+            return this.on.deleted.success
         }
         if(!this.isPossible(can,id) === true) return this.isPossible(can,id)
         console.log({index: this.getIndex(id), data: this.data.products[this.getIndex(id)]});
