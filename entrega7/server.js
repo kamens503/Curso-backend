@@ -75,6 +75,8 @@ io.on('connection', socket => {
         chat.create(data).then( r => {
             console.log('Mensaje nuevo guardado');
             console.log({r});
+            return chat.getAll()
+        }).then(r => {
             io.sockets.emit('render_history',r.result)
             socket.emit('render_history',r.result)
         })
@@ -84,9 +86,7 @@ io.on('connection', socket => {
     //PRODUCT
     socket.on('add_product', data =>{
         productos.create(data)
-            .then(() => {
-                productos.getAll()
-            })
+            .then(() => productos.getAll())
             .then(r => {
                 console.log('Added Product result ');
                 console.log({r});
@@ -100,10 +100,14 @@ io.on('connection', socket => {
     })
 
     socket.on('delete_product', data => {
+        console.log(data.id);
         productos.delete(data.id)
-        .then(() => {productos.getAll()})
         .then(r => {
             console.log('Delete Product result ');
+            console.log(r);
+            return productos.getAll()
+        })
+        .then(r => {
             console.log({r});
             io.sockets.emit('product_deleted',{ products: r.result})
             socket.emit('product_deleted',{products:  r.result, success: 'Producto borrado'})

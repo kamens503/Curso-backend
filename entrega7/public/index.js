@@ -13,7 +13,7 @@ const form= document.querySelector('#form').addEventListener('submit', event =>{
 socket.on('render_history', messages =>{
     let html = '';
     console.log(messages);
-    Object.values(messages).forEach(message => {
+    messages.forEach(message => {
         if (!message) {
             return;
         }
@@ -37,7 +37,7 @@ socket.on('product_deleted', data => {
     console.log(data);
     const status = data.success || data.error || '';
     document.querySelector('#status').innerHTML = status;
-    if (!data.error) return;
+    if (data.error) return;
     let html = `<tr class="bg-slate-700 py-5 h-10">
         <th class="text-white">Imagen</th>
         <th class="text-white">Precio</th>
@@ -83,14 +83,14 @@ socket.on('product_added', data => {
     console.log(data);
     const status = data.success || data.error || '';
     document.querySelector('#status').innerHTML = status;
-    if (!data.error) return;
+    if (data.error) return;
     let html = `<tr class="bg-slate-700 py-5 h-10">
         <th class="text-white">Imagen</th>
         <th class="text-white">Precio</th>
         <th class="text-white">Nombre</th>
         <th class="text-white">Borrar</th>
         </tr>`;
-    Object.values(data.products).forEach(product => {
+        data.products.forEach(product => {
         if (!product.title) {
             return;
         }
