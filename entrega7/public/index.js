@@ -1,11 +1,6 @@
 const socket = io();
 const date = new Date();
 
-
-socket.on('mi mensaje', data => {
-    alert(data)
-});
-
 const chat = document.querySelector('#history')
 const form= document.querySelector('#form').addEventListener('submit', event =>{
     event.preventDefault()
@@ -19,7 +14,7 @@ socket.on('render_history', messages =>{
     let html = '';
     console.log(messages);
     Object.values(messages).forEach(message => {
-        if (!message.message) {
+        if (!message) {
             return;
         }
        html += `<div class=" text-white bubble inline-block ${message.mail == document.querySelector('#mail').value ? 'bg-green-800 mx-5' : 'bg-slate-800'} p-5 rounded-md mx-3 my-2 relative w-3/4">
@@ -43,14 +38,13 @@ socket.on('product_deleted', data => {
     const status = data.success || data.error || '';
     document.querySelector('#status').innerHTML = status;
     if (!data.error) return;
-    let _id = 0;
     let html = `<tr class="bg-slate-700 py-5 h-10">
         <th class="text-white">Imagen</th>
         <th class="text-white">Precio</th>
         <th class="text-white">Nombre</th>
         <th class="text-white">Borrar</th>
         </tr>`;
-    Object.values(data.products).forEach(product => {
+        data.products.forEach(product => {
         if (!product.title) {
             return;
         }
@@ -65,7 +59,7 @@ socket.on('product_deleted', data => {
                 <p class="text-bold">${product.price}</p>
             </td>
             <td class="text-center">
-                <button data-id="${++_id}" class="delete-btn font-bold text-slate-900 py-1 px-2 bg-slate-500">X</button>
+                <button data-id="${product.id}" class="delete-btn font-bold text-slate-900 py-1 px-2 bg-slate-500">X</button>
             </td>
         </tr>`
     })
@@ -90,7 +84,6 @@ socket.on('product_added', data => {
     const status = data.success || data.error || '';
     document.querySelector('#status').innerHTML = status;
     if (!data.error) return;
-    let _id = 0;
     let html = `<tr class="bg-slate-700 py-5 h-10">
         <th class="text-white">Imagen</th>
         <th class="text-white">Precio</th>
@@ -112,7 +105,7 @@ socket.on('product_added', data => {
                 <p class="text-bold">${product.price}</p>
             </td>
             <td class="text-center">
-                <button data-id="${++_id}" class="delete-btn font-bold text-slate-900 py-1 px-2 bg-slate-500">X</button>
+                <button data-id="${product.id}" class="delete-btn font-bold text-slate-900 py-1 px-2 bg-slate-500">X</button>
             </td>
         </tr>`
     })
