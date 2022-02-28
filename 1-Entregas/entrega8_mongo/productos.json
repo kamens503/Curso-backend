@@ -1,0 +1,116 @@
+[{
+  "_id": {
+    "$oid": "621d128322e331010198b8ef"
+  },
+  "stock": 100
+},{
+  "_id": {
+    "$oid": "621d128322e331010198b8f0"
+  },
+  "timestamp": 1645500411247,
+  "name": "Producto 2",
+  "description": "Descripción de producto",
+  "sku": 1235,
+  "img": "https://elegifruta.com.ar/onepage/wp-content/uploads/2017/07/manzana_roja.jpg",
+  "price": 280,
+  "stock": 100
+},{
+  "_id": {
+    "$oid": "621d128322e331010198b8f1"
+  },
+  "timestamp": 1645500411247,
+  "name": "Producto 3",
+  "description": "Descripción de producto",
+  "sku": 1235,
+  "img": "https://elegifruta.com.ar/onepage/wp-content/uploads/2017/07/manzana_roja.jpg",
+  "price": 520,
+  "stock": 100
+},{
+  "_id": {
+    "$oid": "621d128322e331010198b8f2"
+  },
+  "timestamp": 1645500411247,
+  "name": "Producto 4",
+  "description": "Descripción de producto",
+  "sku": 1235,
+  "img": "https://elegifruta.com.ar/onepage/wp-content/uploads/2017/07/manzana_roja.jpg",
+  "price": 348,
+  "stock": 100
+},{
+  "_id": {
+    "$oid": "621d128322e331010198b8f3"
+  },
+  "timestamp": 1645500411247,
+  "name": "Producto 5",
+  "description": "Descripción de producto",
+  "sku": 1235,
+  "img": "https://elegifruta.com.ar/onepage/wp-content/uploads/2017/07/manzana_roja.jpg",
+  "price": 3054,
+  "stock": 100
+},{
+  "_id": {
+    "$oid": "621d128322e331010198b8f4"
+  },
+  "timestamp": 1645500411247,
+  "name": "Producto 6",
+  "description": "Descripción de producto",
+  "sku": 1235,
+  "img": "https://elegifruta.com.ar/onepage/wp-content/uploads/2017/07/manzana_roja.jpg",
+  "price": 4015,
+  "stock": 100
+},{
+  "_id": {
+    "$oid": "621d128322e331010198b8f5"
+  },
+  "timestamp": 1645500411247,
+  "name": "Producto 7",
+  "description": "Descripción de producto",
+  "sku": 1235,
+  "img": "https://elegifruta.com.ar/onepage/wp-content/uploads/2017/07/manzana_roja.jpg",
+  "price": 2300,
+  "stock": 100
+},{
+  "_id": {
+    "$oid": "621d128322e331010198b8f6"
+  },
+  "timestamp": 1645500411247,
+  "name": "Producto 8",
+  "description": "Descripción de producto",
+  "sku": 1235,
+  "img": "https://elegifruta.com.ar/onepage/wp-content/uploads/2017/07/manzana_roja.jpg",
+  "price": 680,
+  "stock": 100
+},{
+  "_id": {
+    "$oid": "621d128322e331010198b8f7"
+  },
+  "timestamp": 1645500411247,
+  "name": "Producto 9",
+  "description": "Descripción de producto",
+  "sku": 1235,
+  "img": "https://elegifruta.com.ar/onepage/wp-content/uploads/2017/07/manzana_roja.jpg",
+  "price": 123,
+  "stock": 100
+},{
+  "_id": {
+    "$oid": "621d128322e331010198b8f8"
+  },
+  "timestamp": 1645500411247,
+  "name": "Producto 10",
+  "description": "Descripción de producto",
+  "sku": 1235,
+  "img": "https://elegifruta.com.ar/onepage/wp-content/uploads/2017/07/manzana_roja.jpg",
+  "price": 3350,
+  "stock": 100
+},{
+  "_id": {
+    "$oid": "621d16b122e331010198b903"
+  },
+  "timestamp": 1645500411247,
+  "name": "Producto 11",
+  "description": "Descripción de producto",
+  "sku": 1235,
+  "img": "https://elegifruta.com.ar/onepage/wp-content/uploads/2017/07/manzana_roja.jpg",
+  "price": 123,
+  "stock": 100
+}]
