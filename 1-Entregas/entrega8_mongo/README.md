@@ -214,6 +214,27 @@
     db.productos.update(
         {}, 
         { $set: {stock: 100} },
+        true,
+        true
+    )
+
+## Cambiar el stock a cero de los productos con precios  mayores a 4000
+
+    db.productos.update(
+        { price: {$gt: 4000}}, 
+        { $set: {stock: 0} },
         false,
         true
+    )
+
+## Borrar los productos con precio menor a 1000 pesos
+
+    db.productos.deleteMany(
+        { price: {$lt: 1000}}
+    )
+
+## Crear Usuario Read only
+
+    db.productos.deleteMany(
+        { price: {$lt: 1000}}
     )
