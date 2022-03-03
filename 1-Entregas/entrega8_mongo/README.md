@@ -244,3 +244,11 @@
             ]
         }
     )
+
+## Activar mongod en modo autenticación
+
+    mongod --auth
+
+## Ingresar con el usuario y la base de datos
+
+    mongo -u pepe -p asd456 --authenticationDatabase ecommerce
