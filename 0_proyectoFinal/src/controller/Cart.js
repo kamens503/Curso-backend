@@ -1,10 +1,9 @@
 class Cart {
-    constructor (id, user) {
-        this.user = user
-       this.id = id
-       this.fs = require('fs')
-       this.timestamp = Date.now()
-       this.on = {
+    constructor (id) {
+        this.id = id
+        this.fs = require('fs')
+        this.timestamp = Date.now()
+        this.on = {
             denied: "No tienes permiso para hacer esta acción",
             modified: {
                 success: "Datos cargado con éxito",
@@ -30,7 +29,7 @@ class Cart {
             price: 0,
             stock: 0
         }
-       this.data = this.getFile (`./${id}_${user}.txt`)
+       this.data = this.getFile (`./cart_${id}.txt`)
     }
     getFile (path) {
         if(!this.fs.existsSync(path)) {
@@ -40,7 +39,7 @@ class Cart {
     }
     rewrite = () => {
         try {
-            this.fs.writeFileSync(`./${this.id}_${this.user}.txt`,JSON.stringify(this.data))
+            this.fs.writeFileSync(`./cart_${this.id}.txt`,JSON.stringify(this.data))
             return {done: true, result: this.on.default.success}
         } catch (error) {
             console.log(error);
@@ -49,19 +48,23 @@ class Cart {
     } 
 
     isPossible = (can, id = false) => {
-        if (id) {
+        if (can) return {done: false, result: this.on.notFound}
+
+        console.log('isPosibleMethod', id);
+        if (!isNaN(id)) {
             const exist =this.data.products.find(product => product?.id === id) 
                         ? this.data.products.find(product => product?.id === id) 
                         : false
 
             console.log({exist: exist});
-            if (id && !exist || exist && undefined) {
+            if (id && !exist || id && exist == undefined) {
                 return {done: false, result: this.on.notFound}
             }   
-        }  
+        } 
+
 
         
-        return can ? true : { done: false, result: this.on.denied }
+        return true
     }
 
     create = (can, product) =>{
@@ -82,10 +85,13 @@ class Cart {
     
     get = (can, id=false) =>{
         console.log('Accessing Get method');
+        console.log('Data', this.data.products);
         if(!this.isPossible(can,id) === true) return {done: false, result: this.isPossible(can,id)} 
-        const result = id ? {done: true, 
+        const result = typeof id === 'number' ? {done: true, 
                              result: this.data.products.find(product => product?.id === id) }
                           : {done: true, result: this.data.products }
+
+        console.log(result);
 
         if (!result.result) {
             return { done: false, result: this.on.notFound }
@@ -121,7 +127,7 @@ class Cart {
 
         if(id === 'ALL') {
             try {
-                this.fs.unlinkSync(`${this.id}_${this.user}.txt`);
+                this.fs.unlinkSync(`./cart_${this.id}.txt`);
                 
                 
             } catch (error) {

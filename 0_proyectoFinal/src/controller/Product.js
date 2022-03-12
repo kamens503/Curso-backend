@@ -89,13 +89,14 @@ class Product {
 
     getIndex = (id) =>{
         const result = this.data.products.findIndex(product => product?.id === id)
+        console.log(result);
         return result
     }
 
     update = (can, id, productObj) =>{
         if(!this.isPossible(can,id) === true) return this.isPossible(can,id)
 
-        const index = this.getIndex(id).result
+        const index = this.getIndex(id)
         console.log(index);
         productObj.timestamp = Date.now()
 
