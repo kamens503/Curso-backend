@@ -28,7 +28,7 @@ class Product {
             price: 0,
             stock: 0
         }
-        this.data = this.getFile (`./${filename}.txt`)
+        this.data = this.getFile (`./data/${filename}.txt`)
     }
     getFile (path) {
         if(!this.fs.existsSync(path)) {

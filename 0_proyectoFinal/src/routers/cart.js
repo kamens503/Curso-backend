@@ -4,9 +4,7 @@ const express = require('express'),
       config = require('../config'),
       Cart = require('../controller/file/Cart.js')
 
-      user = config.user,
-      cart = new Cart('products');
-
+      user = config.user;
 
 /** Cart API component, contains all the CRUD routes
  * @type { Router } 

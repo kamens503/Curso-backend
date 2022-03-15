@@ -29,7 +29,7 @@ class Cart {
             price: 0,
             stock: 0
         }
-       this.data = this.getFile (`./cart_${id}.txt`)
+       this.data = this.getFile (`./data/cart_${id}.txt`)
     }
     getFile (path) {
         if(!this.fs.existsSync(path)) {
