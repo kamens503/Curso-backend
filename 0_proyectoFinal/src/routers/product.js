@@ -1,7 +1,7 @@
 const express = require('express'),
       { Router } = express,
-      Product = require('../controller/file/Product.js'),
       config = require('../config'),
+      Product = config.controller.file.product,
 
       user = config.user,
       products = new Product('products');

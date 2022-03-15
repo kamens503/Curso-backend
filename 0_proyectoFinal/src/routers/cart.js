@@ -2,7 +2,7 @@ const express = require('express'),
       { Router } = express,
       { v4: uuidv1 } = require('uuid'),
       config = require('../config'),
-      Cart = require('../controller/file/Cart.js')
+      Cart = config.controller.file.cart
 
       user = config.user;
 

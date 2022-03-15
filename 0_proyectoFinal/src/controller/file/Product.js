@@ -28,11 +28,14 @@ class Product {
             price: 0,
             stock: 0
         }
-        this.data = this.getFile (`./data/${filename}.txt`)
+        this.data = this.getFile (__dirname + `/data/${filename}.txt`)
     }
     getFile (path) {
         if(!this.fs.existsSync(path)) {
+            console.log('no exist');
+
             this.fs.writeFileSync(path,JSON.stringify({ idPool: 0, products: [] }))
+            console.log('Try to write');
         }
         return JSON.parse(this.fs.readFileSync(path, 'utf-8'))
     }

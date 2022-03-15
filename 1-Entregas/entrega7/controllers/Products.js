@@ -5,8 +5,8 @@ class Products {
         this.table = {
             name : 'products',
             schema : (table) => {
-                table.increments('id').primary(),
-                table.string('title'),
+                table.increments('id').primary()
+                table.string('title')
                 table.string('thumbnail')
                 table.float('price')
             }

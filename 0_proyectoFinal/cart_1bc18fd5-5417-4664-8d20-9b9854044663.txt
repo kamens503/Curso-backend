@@ -1,1 +1,0 @@
-{"idPool":2,"products":[null,{"name":"Detergente I","price":12345,"id":1,"timestamp":1647099237475}]}
