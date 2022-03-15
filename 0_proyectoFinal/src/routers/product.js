@@ -23,7 +23,6 @@ productApi.use(express.urlencoded({extended : true}));
 
 // Producto -- /api/productos
 productApi.get('/', (req, res) => {
-    console.log('ENV', test);
     msg = products.get(user.can('read','product'))
     if (msg.status) {
         res.status(401).send(msg.result)

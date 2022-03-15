@@ -1,7 +1,11 @@
 const express = require('express'),
       { Router } = express,
       { v4: uuidv1 } = require('uuid'),
+      config = require('../config'),
       Cart = require('../controller/file/Cart.js')
+
+      user = config.user,
+      cart = new Cart('products');
 
 
 /** Cart API component, contains all the CRUD routes
