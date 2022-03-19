@@ -1,19 +1,23 @@
 {
   "name": "0_proyectofinal",
-  "tyoe": "module",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --verbose --watch",
     "start": "node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/preset-env": "^7.16.11",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^6.0.0",
+    "jest": "^27.5.1"
   }
 }
