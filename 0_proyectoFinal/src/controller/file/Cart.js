@@ -32,8 +32,8 @@ class Cart {
       price: 0,
       stock: 0
     }
-    this.data = id ? this.getFile(__dirname + `/data/cart_${id}.txt`) : {}
-    this.path = __dirname + `/data/cart_${this.id}.txt`
+    this.data = id ? this.getFile(__dirname + `/data/cart_${id}.json`) : {}
+    this.path = __dirname + `/data/cart_${this.id}.json`
   }
 
   getFile(path) {

@@ -1,142 +1,187 @@
-// const mongoose = require('mongoose'),
-//       model = require('./models/Product.model'),
-//       config = require('../../config'),
-//       URL = config.mongodb
+class Product {
+	constructor(filename) {
+		this.filename = filename;
+		this.fs = require('fs');
+		this.on = {
+			denied: 'No tienes permiso para hacer esta acción',
+			modified: {
+				success: 'Datos cargado con éxito',
+				fail: 'Algo salió mal! Carga incorrecta, verifique los datos pruebe nuevamente',
+			},
+			deleted: {
+				success: 'Datos borrados con éxito',
+				fail: 'Algo salió mal! No se pude borrar',
+			},
+			notFound: 'Producto no encontrado',
+			default: {
+				success: 'Acción realizada con éxito',
+				fail: 'Algo salió mal! Prueba nuevamente',
+			},
+		};
+		this.template = {
+			id: 0,
+			timestamp: Date.now(),
+			name: '',
+			description: '',
+			sku: 0,
+			img: '',
+			price: 0,
+			stock: 0,
+		};
+    this.data = filename ? this.getFile(__dirname + `/data/${filename}.json`) : {}
+    this.path = __dirname + `/data/${this.filename}.json`
+	}
 
-// class Product {
-//      constructor (filename) {
-//         this.db = db
-//         this.on = {
-//             denied: "No tienes permiso para hacer esta acción",
-//             modified: {
-//                 success: "Datos cargado con éxito",
-//                 fail: "Algo salió mal! Carga incorrecta, verifique los datos pruebe nuevamente"
-//             },
-//             deleted: {
-//                 success: 'Datos borrados con éxito',
-//                 fail: 'Algo salió mal! No se pude borrar'
-//             },
-//             notFound: "Producto no encontrado",
-//             default: {
-//                 success: 'Acción realizada con éxito',
-//                 fail: 'Algo salió mal! Prueba nuevamente'
-//             }
-//         }
-//         this.template = {
-//             id: 0,
-//             timestamp: Date.now(),
-//             name: '',
-//             description: '',
-//             sku: 0,
-//             img: '',
-//             price: 0,
-//             stock: 0
-//         }
-//         this.data = this.connect (`./${filename}.txt`)
-//     }
-//     async connect (path) {
-//         try {
-//             await mongoose.connect(URL)
-//         } catch (error) {
-//             console.log(error);
-//         }
-        
-//     }
-//     rewrite = () => {
-//         try {
-//             this.fs.writeFileSync(`./${this.filename}.txt`,JSON.stringify(this.data))
-//             return {done: true, result: this.on.default.success}
-//         } catch (error) {
-//             console.log(error);
-//             return {done: false, result: `Algo salió mal! No se pudo sobreescribir el archivo ${error}`}
-//         }
-//     } 
+  assignContainer(name) {
+    this.filename = name
 
-//     isPossible = (can, id = false) => {
-//         if (id) {
-//             const exist =this.data.products.find(product => product?.id === id) 
-//                         ? this.data.products.find(product => product?.id === id) 
-//                         : false
+    if (!this.fs.existsSync(this.path)) return false
 
-//             console.log({exist: exist});
-//             if (id && !exist || exist && undefined) {
-//                 return {done: false, result: this.on.notFound}
-//             }   
-//         }  
+    this.data = this.getFile(this.path)
 
-        
-//         return can ? true : { done: false, result: this.on.denied }
-//     }
+    return true;
+  }
+  
+  rewrite = () => {
+    try {
+      this.fs.writeFileSync(this.path, JSON.stringify(this.data))
+      return {
+        done: true,
+        result: this.on.default.success
+      }
+    } catch (error) {
+      return {
+        done: false,
+        result: `Algo salió mal! No se pudo sobreescribir el archivo ${error}`
+      }
+    }
+  }
 
-//     create = (can, product) =>{
-//         if(!this.isPossible(can) === true) return this.isPossible(can,id)
-//         const id = this.data.idPool++
+	getFile(path) {
+		if (!this.fs.existsSync(path)) {
 
-//         product.id = id
-//         product.timestamp = Date.now()
-
-//         const newProduct = {...this.template, ...product }
-//         this.data.products.push(newProduct)
-
-//         const msg = this.rewrite()
-//         return msg.done ? {done: msg.done , result: this.on.modified.success}
-//                     : {done: msg.done, result: msg.result}
-
-//     }
-    
-//     get = (can, id=false) =>{
-
-//         if(!this.isPossible(can,id) === true) return {done: false, result: this.isPossible(can,id)} 
-//         const result = id ? {done: true, 
-//                              result: this.data.products.find(product => product?.id === id) }
-//                           : {done: true, result: this.data.products }
-//         return result
-//     }
-
-//     getIndex = (id) =>{
-//         const result = this.data.products.findIndex(product => product?.id === id)
-//         console.log(result);
-//         return result
-//     }
-
-//     update = (can, id, productObj) =>{
-//         if(!this.isPossible(can,id) === true) return this.isPossible(can,id)
-
-//         const index = this.getIndex(id)
-//         console.log(index);
-//         productObj.timestamp = Date.now()
-
-//         this.data.products[index] = {...this.data.products[index], ...productObj }
-
-//         console.log(this.data.products[index]);
+			this.fs.writeFileSync(path, JSON.stringify({ idPool: 0, products: [] }));
+		}
+		return JSON.parse(this.fs.readFileSync(path, 'utf-8'));
+	}
 
 
-//         const msg = this.rewrite()
-//         return msg.done ? {done: msg.done , result: this.on.modified.success}
-//                     : {done: msg.done, result: msg.result}
-//     }
 
-//     delete = (can, id=false) => {
-//         console.log({can, id});
-//         if(id === 'ALL') {
-//             try {
-//                 this.fs.unlinkSync(`./${this.filename}.txt`);
-//                 delete this.data;
-//                 return this.on.deleted.success
-                
-//             } catch (error) {
-//                 return this.on.deleted.fail
-//             }
-//         }
-//         if(this.isPossible(can,id) !== true) {
-//             console.log(this.isPossible(can,id));
-//             return this.isPossible(can,id)
-//         }
-//         console.log({index: this.getIndex(id), data: this.data.products[this.getIndex(id)]});
-//         delete this.data.products[this.getIndex(id)]
-//         const msg = this.rewrite()
-//         return msg.done ? {done: true, result: this.on.deleted.success} : {done: false, result: this.on.deleted.fail}
-//     }
-// }
+  isProductInCart = (id) => {
+    if (isNaN(id)) return false
 
-// module.exports = Product
+    const exist = this.data.products.find(product => product?.id === id) ?
+      this.data.products.find(product => product?.id === id) :
+      false
+
+    if (id && !exist || id && exist == undefined) {
+      return false
+    }
+    return true
+  }
+
+	add = (product) => {
+		const product_id = this.data.idPool++
+
+    product.id = product_id
+    product.timestamp = Date.now()
+
+    const newProduct = {
+      ...this.template,
+      ...product
+    }
+    this.data.products.push(newProduct)
+
+    const msg = this.rewrite()
+
+    return msg.done ? {
+      done: msg.done,
+      result: this.on.modified.success
+    } : {
+      done: false,
+      result: msg.result
+    }
+	};
+
+	get = (product_id) => {
+    const result = typeof product_id === 'number' 
+    ? {
+      done: true,
+      result: this.data.products.find(product => product?.id === product_id)
+    } 
+    : {
+      done: true,
+      result: this.data.products
+    }
+
+    if (!result.result) {
+    return {
+    done: false,
+    result: this.on.notFound
+    }
+    }
+    return result
+	};
+
+	getIndex = (id) => {
+		const result = this.data.products.findIndex(product => product.id === id)
+    return result
+	};
+
+  getFromIndex = (index) => {
+    const product = this.data.products[index]
+
+    return product ? { done: true, result: product }
+                   : { done: false, result: this.on.notFound }
+  }
+
+	update = (id, productObj) => {
+
+		const index = this.getIndex(product_id)
+    if (typeof index !== 'number') return {done: false, result: this.on.notFound}
+
+		console.log(index);
+		productObj.timestamp = Date.now();
+
+		this.data.products[index] = { ...this.data.products[index], ...productObj };
+
+		const msg = this.rewrite();
+		return msg.done
+			? { done: msg.done, result: this.on.modified.success }
+			: { done: msg.done, result: msg.result };
+	};
+
+	delete = (product_id = false) => {
+    //Delete all cart if empty
+		if (typeof product_id !== 'number') {
+      try {
+        this.fs.unlinkSync(this.path);
+
+
+      } catch (error) {
+        return {
+          done: false,
+          result: `${this.on.deleted.fail} : ${error}`
+        }
+      }
+      delete this.data;
+      return {done: true, result: this.on.deleted.success}
+    }
+
+    const index = this.getIndex(product_id)
+    if (typeof index !== 'number') return {done: false, result: this.on.notFound}
+
+    delete this.data.products[index]
+    const msg = this.rewrite()
+    return msg.done ? {
+      done: true,
+      result: this.on.deleted.success
+    } : {
+      done: false,
+      result: this.on.deleted.fail
+    }
+  }
+
+}
+
+module.exports = Product;

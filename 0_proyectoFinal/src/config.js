@@ -5,16 +5,16 @@ module.exports.endpoints = {
 
 module.exports.controller = {
     file: {
-        product: require('./controller/file/Product'),
-        cart   : require('./controller/file/Cart')
+        Product: require('./controller/file/Product'),
+        Cart   : require('./controller/file/Cart')
     },
     firebase: {
-        product : require('./controller/firebase/Product'),
-        cart    : require('./controller/firebase/Cart')
+        Product : require('./controller/firebase/Product'),
+        Cart    : require('./controller/firebase/Cart')
     },
-    mongo   : {
-        product : require('./controller/mongo/Product'),
-        cart    : require('./controller/mongo/Cart')
+    mongodb: {
+        Product : require('./controller/mongo/Product'),
+        Cart    : require('./controller/mongo/Cart')
     },
     user : require('./controller/User')
 }

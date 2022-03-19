@@ -1,10 +1,5 @@
-// declare var test: any
-// declare var expect: any
-
-const Product = require('../src/controller/file/Product'),
-	filename = 'products',
-	products = new Product(filename)
-
+const { Product: products } = require('../../src/dao'),
+	filename = 'products';
 let product_id
 
 const { faker } = require('@faker-js/faker');
@@ -73,10 +68,10 @@ describe('My container works if', ()=> {
     expect(product).toMatchObject({ done: true });
   })
 
-  // it('Can empty the container', () => {
-  //   const msg = products.delete()
-  //   // console.log(msg);
-  //   expect(msg).toMatchObject({ done: true });
-  // })
+  it('Can empty the container', () => {
+    const msg = products.delete()
+    // console.log(msg);
+    expect(msg).toMatchObject({ done: true });
+  })
 
 })

@@ -12,12 +12,19 @@
   "license": "ISC",
   "dependencies": {
     "@babel/preset-env": "^7.16.11",
+    "async-require": "^1.2.2",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "mongoose": "^6.2.7",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.0.0",
     "jest": "^27.5.1"
+  },
+  "jest": {
+    "testPathIgnorePatterns" : [
+      "<rootDir>/src/test/file/" 
+    ]
   }
 }
