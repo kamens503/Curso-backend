@@ -1,26 +1,24 @@
 require('dotenv').config()
-const { controller } = require('../../src/config.js'),
-      Cart = controller.mongodb.Cart,
-      cart = new Cart(process.env.MONGODB_CONNECTION)
+const { container } = require('../../src/config.js'),
+      Cart  = require("../../src/controller/mongo/Cart"),
+      cart  = new Cart(container.mongodb.host)
 
 
 let product_id
 
 const { faker } = require('@faker-js/faker');
 
-describe('My cart works if', ()=> {
+describe(' [ MONGO.DB ] My cart works if', ()=> {
 
-  it('Can connect to database and store data to property data', done => {
-    cart.syncLocalData().then(r => {
-      done()
-    }).catch(e => {
-      cart.disconnect()
-      done(e)
-    })
+  it('Can sync database data to local data', async () => {
+    return cart.syncLocalData()
+                .catch(e => {
+                  console.log(e);
+                })
   });
 
 
-  it('Can add product to cart', done => {
+  it('Can add product to cart', () => {
     const product = {
       name        : faker.commerce.product(),
       description : faker.commerce.productDescription(),
@@ -32,14 +30,11 @@ describe('My cart works if', ()=> {
     };
     cart.addProduct(product).then( r => {
       expect(r).toMatchObject({ done: true });
-      done()
     }).catch( e => {
-      cart.disconnect()
-      done(e)
     })
   });
 
-  it('Can add another product', done => {
+  it('Can add another product', () => {
     const product = {
       name        : faker.commerce.product(),
       description : faker.commerce.productDescription(),
@@ -51,23 +46,17 @@ describe('My cart works if', ()=> {
     };
     cart.addProduct(product).then( r => {
       expect(r).toMatchObject({ done: true });
-      done()
     }).catch( e => {
-      cart.disconnect()
-      done(e)
     })
   });
   
-  it('Can get all products from cart', done => {
+  it('Can get all products from cart', async () => {
     
-    cart.get().then( r => {
+    return cart.get().then( r => {
       try {
         expect(r).toMatchObject({ done: true });
-        done()
       } catch (error) {
         console.log(error)
-        cart.disconnect()
-        done(error)
       }
     })
     
@@ -79,7 +68,6 @@ describe('My cart works if', ()=> {
       expect(cart.getIndex(id)).toBe(0);
     } catch (e) {
       console.log(cart.getIndex(id));
-      cart.disconnect()
     }
   
   })
@@ -90,44 +78,44 @@ describe('My cart works if', ()=> {
       expect(cart.getProductFromIndex(0)).toMatchObject({ done: true });  
     } catch (error) {
       console.log(cart.getProductFromIndex(0))
-      cart.disconnect()
     }
   })
   
-  it('Can delete first product from cart', done => {
+  it('Can delete first product from cart', async () => {
 
     const id = cart.getProductFromIndex(0).result._id 
 
-    cart.delete(id)
+    return cart.delete(id)
         .then( r => {
           console.log(r);
           try {
             expect(r).toMatchObject({ done: true });
-            done()
           } catch (error) {
-            done(error)
-            cart.disconnect()
+            console.log(error);
           }
         })
         .catch(e => {
           console.log(e);
-          cart.disconnect()
         })
   })
 
-  // it('Can empty the cart', done => {
-  //   cart.delete().then( r => {
-  //     console.log(r);
-  //     try {
-  //       expect(r).toMatchObject({ done: true });
-  //       done()
-  //     } catch (e) {
-  //       cart.disconnect()
-  //       done(e)
-  //     }
-  //   }).catch(e => {
-  //     console.log(e);
-  //   }) 
-  // })
+  it('Can empty the cart', async () => {
+    return cart.delete().then( r => {
+      try {
+        expect(r).toMatchObject({ done: true });
+      } catch (e) {
+      }
+    }).catch(e => {
+      console.log(e);
+    }) 
+  })
+
+  // It may disconnect before finish the others test Enable it only to test disconnect method
+  // it('Can disconect from Database', async () => {
+  //   return cart.disconnect()
+  //           .catch(e => {
+  //             console.log(e);
+  //           })
+  // });
 
 })

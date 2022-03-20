@@ -11,4 +11,4 @@ const productSchema = new Schema ({
     timestamp   : { type: String, required: true}
 })
 
-module.exports = model(container.mongodb.collection.product, productSchema)
+module.exports = model(container.firebase.collection.cart, productSchema)

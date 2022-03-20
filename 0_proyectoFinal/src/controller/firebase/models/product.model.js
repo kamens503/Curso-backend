@@ -1,5 +1,5 @@
 const { Schema, model} = require('mongoose'),
-      { container }    = require('../../../config.js')
+      { container }    = require('../../../config')
 
 const productSchema = new Schema ({
     name        : { type: String, required: true },

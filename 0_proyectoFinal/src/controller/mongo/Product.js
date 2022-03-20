@@ -1,6 +1,7 @@
-const mongoose = require('mongoose')
-const model = require('./models/product.model.js')
-require('dotenv').config()
+const mongoose = require('mongoose'),
+      model = require('./models/product.model.js'),
+      { container } = require('../../config'),
+      collection = container.mongodb.collection.product
 
 class Product {
 	constructor(conexion = false) {
@@ -36,7 +37,7 @@ class Product {
 			stock: 0,
 		};
     this.client = mongoose
-    this.client.connect(this.conexion)
+    this.db = this.client.connect(this.conexion)
 	}
 
   async syncLocalData() {
@@ -50,8 +51,11 @@ class Product {
     }
   }
   
-  disconnect(){
-    mongoose.disconnect().catch(e => {console.log(e);})
+  async disconnect(){
+    this.db.disconnect()
+          .catch(e => {
+            console.log('Error a desconectarse',e);
+          })
   }
 
 	async saveProduct(product) {
@@ -170,8 +174,7 @@ class Product {
     
     if (typeof product_id !== 'number') {
       try {
-        console.log(process.env.MONGODB_PRODUCT_COLLECTION);
-        await mongoose.connection.db.dropCollection(process.env.MONGODB_PRODUCT_COLLECTION)
+        await mongoose.connection.db.dropCollection(collection)
         delete this.data;
         return {done: true, result: this.on.deleted.success}
       } catch (error) {

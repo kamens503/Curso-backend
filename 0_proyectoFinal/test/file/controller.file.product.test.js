@@ -1,13 +1,13 @@
 require('dotenv').config()
-const { controller } = require('../../src/config.js'),
-      Product  = controller.file.Product,
-      products = new Product(process.env.FILE_PRODUCT_ID),
-      container_id = process.env.FILE_PRODUCT_ID 
+const { container } = require('../../src/config.js'),
+      Product       =  require("../../src/controller/file/Product"),
+      container_id  = container.file.name.product,
+      products      = new Product(container_id)
 let product_id
 
 const { faker } = require('@faker-js/faker');
 
-describe('My container works if', ()=> {
+describe(' [ FILE ] My Product container works if', ()=> {
 
   it('Can Assign a container', () => {
     let msg = products.assignContainer(container_id)
@@ -25,24 +25,24 @@ describe('My container works if', ()=> {
 
   it('Can add product to container', () => {
     const product = {
-      name: faker.commerce.product(),
-      description: faker.commerce.productDescription(),
-      price: faker.commerce.price(),
-      stock: faker.datatype.number(),
-      img: faker.image.imageUrl(),
-      timestamP: faker.time.recent(),
+      name        : faker.commerce.product(),
+      description : faker.commerce.productDescription(),
+      price       : faker.commerce.price(),
+      stock       : faker.datatype.number(),
+      img         : faker.image.imageUrl(),
+      timestamp   : faker.time.recent(),
     };
     expect(products.addProduct(product)).toMatchObject({ done: true });
   });
 
   it('Can add another product', () => {
     const product = {
-      name: faker.commerce.product(),
-      description: faker.commerce.productDescription(),
-      price: faker.commerce.price(),
-      stock: faker.datatype.number(),
-      img: faker.image.imageUrl(),
-      timestamP: faker.time.recent(),
+      name        : faker.commerce.product(),
+      description : faker.commerce.productDescription(),
+      price       : faker.commerce.price(),
+      stock       : faker.datatype.number(),
+      img         : faker.image.imageUrl(),
+      timestamp   : faker.time.recent(),
     };
     expect(products.addProduct(product)).toMatchObject({ done: true });
   });

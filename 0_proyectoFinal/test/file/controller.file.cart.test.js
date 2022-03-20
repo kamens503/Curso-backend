@@ -1,14 +1,14 @@
 require('dotenv').config()
-const { controller } = require('../../src/config.js'),
-      Cart           = controller.file.Cart
-      cart_id        = process.env.FILE_CART_ID
-      cart           = new Cart(cart_id)
+const { container } = require('../../src/config.js'),
+      Cart          = require("../../src/controller/file/Cart"),
+      cart_id       = container.file.name.cart,
+      cart          = new Cart(cart_id)
 
 let product_id
 
 const { faker } = require('@faker-js/faker');
 
-describe('My cart works if', ()=> {
+describe(' [ FILE ] My cart works if', ()=> {
 
   it('Can Assign a cart', () => {
     expect(cart.assignCart(cart_id)).toBe(true);
@@ -21,24 +21,24 @@ describe('My cart works if', ()=> {
 
   it('Can add product to cart', () => {
     const product = {
-      name: faker.commerce.product(),
-      description: faker.commerce.productDescription(),
-      price: faker.commerce.price(),
-      stock: faker.datatype.number(),
-      img: faker.image.imageUrl(),
-      timestamP: faker.time.recent(),
+      name        : faker.commerce.product(),
+      description : faker.commerce.productDescription(),
+      price       : faker.commerce.price(),
+      stock       : faker.datatype.number(),
+      img         : faker.image.imageUrl(),
+      timestamp   : faker.time.recent(),
     };
     expect(cart.addProduct(product)).toMatchObject({ done: true });
   });
 
   it('Can add another product', () => {
     const product = {
-      name: faker.commerce.product(),
-      description: faker.commerce.productDescription(),
-      price: faker.commerce.price(),
-      stock: faker.datatype.number(),
-      img: faker.image.imageUrl(),
-      timestamP: faker.time.recent(),
+      name        : faker.commerce.product(),
+      description : faker.commerce.productDescription(),
+      price       : faker.commerce.price(),
+      stock       : faker.datatype.number(),
+      img         : faker.image.imageUrl(),
+      timestamp   : faker.time.recent(),
     };
     expect(cart.addProduct(product)).toMatchObject({ done: true });
   });

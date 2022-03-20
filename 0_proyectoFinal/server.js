@@ -1,17 +1,11 @@
 const express = require('express'),
       app = express(),
       port = 8080 || process.env.port,
-      { Product: productRouter , Cart : cartRouter } = require('./src/dao.js')
+      { container } = require('./src/config')
 
-// console.log(productRouter);
-cartRouter.get().then( r => {
-  id = r.result[0]._id
-  console.log( JSON.stringify(id) )
-  }
-)
-      
 
-require('dotenv').config()
+const collection = container.firebase.collection.cart
+console.log(collection);
 
 // app.use(isAuthorized())
 

@@ -1,149 +1,200 @@
-// TODO: Refactor Class
+// const mongoose = require('mongoose')
+// const model = require('./models/cart.model.js')
+
 class Cart {
-    constructor (id) {
-        this.id = id
-        this.fs = require('fs')
-        this.timestamp = Date.now()
-        this.on = {
-            denied: "No tienes permiso para hacer esta acción",
-            modified: {
-                success: "Datos cargado con éxito",
-                fail: "Algo salió mal! Carga incorrecta, verifique los datos pruebe nuevamente"
-            },
-            deleted: {
-                success: 'Datos borrados con éxito',
-                fail: 'Algo salió mal! No se pude borrar'
-            },
-            notFound: "Producto no encontrado",
-            default: {
-                success: 'Acción realizada con éxito',
-                fail: 'Algo salió mal! Prueba nuevamente'
-            }
-        }
-        this.productTemplate = {
-            id: 0,
-            timestamp: Date.now(),
-            name: '',
-            description: '',
-            sku: 0,
-            img: '',
-            price: 0,
-            stock: 0
-        }
-       this.data = this.getFile (`./cart_${id}.txt`)
+  constructor(conexion = false) {
+    this.conexion = conexion
+    if (!conexion) {
+      throw 'Error: Invalid mongodb conexion path'
     }
-    getFile (path) {
-        if(!this.fs.existsSync(path)) {
-            this.fs.writeFileSync(path,JSON.stringify({ idPool: 0, products: [] }))
-        }
-        return JSON.parse(this.fs.readFileSync(path, 'utf-8'))
+
+    this.timestamp = Date.now()
+    this.on = {
+      denied: "No tienes permiso para hacer esta acción",
+      modified: {
+        success: "Datos cargado con éxito",
+        fail: "Algo salió mal! Carga incorrecta, verifique los datos pruebe nuevamente"
+      },
+      deleted: {
+        success: 'Datos borrados con éxito',
+        fail: 'Algo salió mal! No se pude borrar'
+      },
+      notFound: {
+        cart: "Producto no encontrado",
+        product: "Carrito no encontrado"
+      },
+      default: {
+        success: 'Acción realizada con éxito',
+        fail: 'Algo salió mal! Prueba nuevamente'
+      }
     }
-    rewrite = () => {
-        try {
-            this.fs.writeFileSync(`./cart_${this.id}.txt`,JSON.stringify(this.data))
-            return {done: true, result: this.on.default.success}
-        } catch (error) {
-            console.log(error);
-            return {done: false, result: `Algo salió mal! No se pudo sobreescribir el archivo ${error}`}
-        }
-    } 
+    this.productTemplate = {
+      id: 0,
+      timestamp: Date.now(),
+      name: '',
+      description: '',
+      sku: 0,
+      img: '',
+      price: 0,
+      stock: 0
+    }
+    this.client = mongoose
+    this.client.connect(this.conexion)
+  }
 
-    isPossible = (can, id = false) => {
-        if (can) return {done: false, result: this.on.notFound}
-
-        console.log('isPosibleMethod', id);
-        if (!isNaN(id)) {
-            const exist =this.data.products.find(product => product?.id === id) 
-                        ? this.data.products.find(product => product?.id === id) 
-                        : false
-
-            console.log({exist: exist});
-            if (id && !exist || id && exist == undefined) {
-                return {done: false, result: this.on.notFound}
-            }   
-        } 
-
-
-        
+  async syncLocalData() {
+    
+      try {
+        this.data = await model.find().exec()
         return true
+      } catch (e) {
+          console.log(e);
+          return false
+      }
+  }
+
+  disconnect(){
+    this.client.disconnect().catch(e => {console.log(e);})
+  }
+
+  async saveProduct(product) {
+    const new_product = new model(product)
+    try {
+      await new_product.save()
+      
+    } catch (error) {
+        console.log(error);
+        return {done: false, result: error}
     }
+    await this.syncLocalData()
+    return {done: true, result: this.on.modified.success}
+  }
+  
 
-    create = (can, product) =>{
-        if(!this.isPossible(can) === true) return this.isPossible(can)
-        const id = this.data.idPool++
+  isProductInContainer = (id) => {
+    if (typeof product_id !== 'number') return false
 
-        product.id = id
-        product.timestamp = Date.now()
+    const exist = this.data.find(product => product?.id === id) ?
+      this.data.find(product => product?.id === id) :
+      false
 
-        const newProduct = {...this.template, ...product }
-        this.data.products.push(newProduct)
+    if (id && !exist || id && exist == undefined) {
+      return false
+    }
+    return true
+  }
 
-        const msg = this.rewrite()
-        return msg.done ? {done: msg.done , result: this.on.modified.success}
-                    : {done: msg.done, result: msg.result}
+  async addProduct (product) {
 
+    product.timestamp = Date.now()
+
+    const newProduct = {
+      ...this.template,
+      ...product
     }
     
-    get = (can, id=false) =>{
-        console.log('Accessing Get method');
-        console.log('Data', this.data.products);
-        if(!this.isPossible(can,id) === true) return {done: false, result: this.isPossible(can,id)} 
-        const result = typeof id === 'number' ? {done: true, 
-                             result: this.data.products.find(product => product?.id === id) }
-                          : {done: true, result: this.data.products }
+    const msg = await this.saveProduct(newProduct)
+    this.data = await this.syncLocalData(this.conexion)
 
-        console.log(result);
+    return msg.done ? {
+      done: msg.done,
+      result: this.on.modified.success
+    } : {
+      done: false,
+      result: `${this.on.modified.fail} : ${msg.result}`
+    }
 
-        if (!result.result) {
-            return { done: false, result: this.on.notFound }
+  }
+
+   get = async (product_id = false) => {
+    await this.syncLocalData()
+    const result = typeof product_id === 'number' 
+                  ? {
+                    done: true,
+                    result: this.data.find(product => product?.id === product_id).exec()
+                  } 
+                  : {
+                    done: true,
+                    result: this.data
+                  }
+
+    if (!result.result) {
+      return {
+        done: false,
+        result: this.on.notFound.product
+      }
+    }
+    return result
+  }
+
+  getIndex = (id) => {
+    const result       = this.data.findIndex(product => {
+      const product_id = JSON.stringify(product._id)
+      const equal      = product_id.replace(/"/g,"") == id 
+      return equal
+    })
+    return result
+  }
+
+  getProductFromIndex = (index) => {
+    const {name, price, description, sku, img, stock, timestamp, _id: product_id} = this.data[index]
+    const id = JSON.stringify(product_id)
+    const end_product = { name, price, description, sku, img, stock, timestamp , _id: id.replace(/"/g,"")}
+
+    return end_product ? { done: true, result: end_product }
+                   : { done: false, result: this.on.notFound.product }
+  }
+
+  update = (product_id) => {
+
+
+    const index = this.getIndex(id).result
+    productObj.timestamp = Date.now()
+
+    const newProduct = {
+      ...this.data[index],
+      ...productObj
+    }
+
+    const msg = saveProduct(newProduct)
+    this.syncLocalData(this.conexion)
+
+    return msg.done ? {
+      done: msg.done,
+      result: this.on.modified.success
+    } : {
+      done: msg.done,
+      result: `${this.on.modified.fail} : ${msg.result}`
+    }
+  }
+
+  async delete (product_id = false) {
+    
+    if (typeof product_id !== 'number') {
+      try {
+        await this.client.connection.db.dropCollection(config.container.collection.cart)
+        delete this.data;
+        return {done: true, result: this.on.deleted.success}
+      } catch (error) {
+        return {
+          done: false,
+          result: `${this.on.deleted.fail} : ${error}`
         }
-        return result
+      }
+      
     }
 
-    getIndex = (id) =>{
-        const result = this.data.products.findIndex(product => product.id === id)
-        return result
+    const index = this.getIndex(product_id)
+    if (typeof index !== 'number') return {done: false, result: this.on.notFound.product}
+
+    delete this.data[index]
+    try {
+      await model.find({ _id: product_id }).remove().exec();
+      return { done: true, result: this.on.deleted.success }
+    } catch (error) {
+      return { done: false, result: this.on.deleted.fail + error }
     }
-
-    update = (can, id, productObj) =>{
-        if(!this.isPossible(can,id) === true) return this.isPossible(can,id)
-
-        const index = this.getIndex(id).result
-        console.log(index);
-        productObj.timestamp = Date.now()
-
-        this.data.products[index] = {...this.data.products[index], ...productObj }
-
-        console.log(this.data.products[index]);
-
-
-        const msg = this.rewrite()
-        return msg.done ? {done: msg.done , result: this.on.modified.success}
-                    : {done: msg.done, result: msg.result}
-    }
-
-    delete = (can, id=false) => {
-        console.log({can, id});
-        
-
-        if(id === 'ALL') {
-            try {
-                this.fs.unlinkSync(`./cart_${this.id}.txt`);
-                
-                
-            } catch (error) {
-                return {done:false, result: `${this.on.deleted.fail} : ${error}`}
-            }
-            delete this.data;
-            return this.on.deleted.success
-        }
-        if(!this.isPossible(can,id) === true) return this.isPossible(can,id)
-        console.log({index: this.getIndex(id), data: this.data.products[this.getIndex(id)]});
-        delete this.data.products[this.getIndex(id)]
-        const msg = this.rewrite()
-        return msg.done ? {done: true, result: this.on.deleted.success} : {done: false, result: this.on.deleted.fail}
-    }
+  }
 }
 
 module.exports = Cart
-

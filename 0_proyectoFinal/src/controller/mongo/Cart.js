@@ -1,7 +1,7 @@
-const mongoose = require('mongoose')
-const model = require('./models/cart.model.js')
-require('dotenv').config()
-
+const mongoose = require('mongoose'),
+      model = require('./models/cart.model.js'),
+      { container } = require('../../config'),
+      collection = container.mongodb.collection.cart
 
 class Cart {
   constructor(conexion = false) {
@@ -41,8 +41,7 @@ class Cart {
       stock: 0
     }
     this.client = mongoose
-    this.client.connect(this.conexion)
-    // this.data = this.syncLocalData(this.conexion)
+    this.db = this.client.connect(this.conexion)
   }
 
   async syncLocalData() {
@@ -56,8 +55,11 @@ class Cart {
       }
   }
 
-  disconnect(){
-    mongoose.disconnect().catch(e => {console.log(e);})
+  async disconnect(){
+    this.db.disconnect()
+          .catch(e => {
+            console.log('Error a desconectarse',e);
+          })
   }
 
   async saveProduct(product) {
@@ -97,7 +99,7 @@ class Cart {
     }
     
     const msg = await this.saveProduct(newProduct)
-    this.data = await this.syncLocalData(this.conexion)
+    this.data = await this.syncLocalData()
 
     return msg.done ? {
       done: msg.done,
@@ -160,7 +162,7 @@ class Cart {
     }
 
     const msg = saveProduct(newProduct)
-    this.syncLocalData(this.conexion)
+    this.syncLocalData()
 
     return msg.done ? {
       done: msg.done,
@@ -175,8 +177,7 @@ class Cart {
     
     if (typeof product_id !== 'number') {
       try {
-        console.log(process.env.MONGODB_CART_COLLECTION);
-        await mongoose.connection.db.dropCollection(process.env.MONGODB_CART_COLLECTION)
+        await this.client.connection.db.dropCollection(collection)
         delete this.data;
         return {done: true, result: this.on.deleted.success}
       } catch (error) {

@@ -1,25 +1,25 @@
 
 require('dotenv').config()
 
-const { controller } = require('./config.js')
+const { controller, container } = require('./config.js')
 
 let Cart, 
     Product,
     cartId,
     productId
 
-switch (process.env.provider) {
+switch (container.provider) {
   case 'file':
-    Cart    = controller.file.Cart
-    Product = controller.file.Product
-    cartId = process.env.FILE_CART_ID
-    productId = process.env.FILE_PRODUCT_ID
+    Cart      = controller.file.Cart
+    Product   = controller.file.Product
+    cartId    = container.file.name.cart
+    productId = container.file.name.product
     break;
   
   case 'mongodb':
-    Cart    = controller.mongodb.Cart
-    Product = controller.file.Product
-    cartId = process.env.MONGODB_CONNECTION
+    Cart      = controller.mongodb.Cart
+    Product   = controller.file.Product
+    cartId    = process.env.MONGODB_CONNECTION
     productId = process.env.MONGODB_CONNECTION
     break;
 
@@ -35,5 +35,5 @@ switch (process.env.provider) {
 }
 
 
-module.exports.Cart = new Cart(cartId)
+module.exports.Cart    = new Cart(cartId)
 module.exports.Product = new Product(productId)
