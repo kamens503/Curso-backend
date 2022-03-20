@@ -1,11 +1,13 @@
 const mongoose = require('mongoose')
 const model = require('./models/cart.model.js')
+require('dotenv').config()
+
 
 class Cart {
   constructor(conexion = false) {
     this.conexion = conexion
     if (!conexion) {
-      throw 'Error: Invalid mongoodb conexion path'
+      throw 'Error: Invalid mongodb conexion path'
     }
 
     this.timestamp = Date.now()
@@ -132,7 +134,6 @@ class Cart {
     const result = this.data.findIndex(product => {
       const product_id = JSON.stringify(product._id)
       const equal = product_id.replace(/"/g,"") == id 
-      // console.log({equal, product_id: product_id.replace(/"/g,""), id});
       return equal
     })
     return result
@@ -174,15 +175,17 @@ class Cart {
     
     if (typeof product_id !== 'number') {
       try {
-        await mongoose.connection.db.dropCollection('foo')
+        console.log(process.env.MONGODB_CART_COLLECTION);
+        await mongoose.connection.db.dropCollection(process.env.MONGODB_CART_COLLECTION)
+        delete this.data;
+        return {done: true, result: this.on.deleted.success}
       } catch (error) {
         return {
           done: false,
           result: `${this.on.deleted.fail} : ${error}`
         }
       }
-      delete this.data;
-      return {done: true, result: this.on.deleted.success}
+      
     }
 
     const index = this.getIndex(product_id)

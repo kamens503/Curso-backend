@@ -12,15 +12,15 @@ switch (process.env.provider) {
   case 'file':
     Cart    = controller.file.Cart
     Product = controller.file.Product
-    cartId = process.env.file_cart_id
-    productId = process.env.file_product_id
+    cartId = process.env.FILE_CART_ID
+    productId = process.env.FILE_PRODUCT_ID
     break;
   
   case 'mongodb':
     Cart    = controller.mongodb.Cart
     Product = controller.file.Product
-    cartId = process.env.mongoodb_connection
-    productId = process.env.file_product_id
+    cartId = process.env.MONGODB_CONNECTION
+    productId = process.env.MONGODB_CONNECTION
     break;
 
   case 'firebase':

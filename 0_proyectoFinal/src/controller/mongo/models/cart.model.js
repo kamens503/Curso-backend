@@ -1,4 +1,5 @@
 const { Schema, model} = require('mongoose')
+require('dotenv').config()
 
 const productSchema = new Schema ({
     name        : { type: String, required: true },
@@ -10,4 +11,4 @@ const productSchema = new Schema ({
     timestamp   : { type: String, required: true}
 })
 
-module.exports = model('products', productSchema)
+module.exports = model(process.env.MONGODB_CART_COLLECTION, productSchema)

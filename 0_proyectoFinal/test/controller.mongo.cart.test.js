@@ -1,4 +1,7 @@
-const { Cart: cart } = require('../src/dao.js')
+require('dotenv').config()
+const { controller } = require('../src/config.js'),
+      Cart = controller.mongodb.Cart,
+      cart = new Cart(process.env.MONGODB_CONNECTION)
 
 
 let product_id
@@ -17,64 +20,65 @@ describe('My cart works if', ()=> {
   });
 
 
-  // it('Can add product to cart', done => {
-  //   const product = {
-  //     name: faker.commerce.product(),
-  //     description: faker.commerce.productDescription(),
-  //     price     : faker.commerce.price(),
-  //     stock     : faker.datatype.number(),
-  //     img       : faker.image.imageUrl(),
-  //     timestamp : faker.time.recent(),
-  //     sku       : faker.datatype.number()
-  //   };
-  //   cart.addProduct(product).then( r => {
-  //     expect(r).toMatchObject({ done: true });
-  //     done()
-  //   }).catch( e => {
-  //     cart.disconnect()
-  //     done(e)
-  //   })
-  // });
+  it('Can add product to cart', done => {
+    const product = {
+      name        : faker.commerce.product(),
+      description : faker.commerce.productDescription(),
+      price       : faker.commerce.price(),
+      stock       : faker.datatype.number(),
+      img         : faker.image.imageUrl(),
+      timestamp   : faker.time.recent(),
+      sku         : faker.datatype.number()
+    };
+    cart.addProduct(product).then( r => {
+      expect(r).toMatchObject({ done: true });
+      done()
+    }).catch( e => {
+      cart.disconnect()
+      done(e)
+    })
+  });
 
-  // it('Can add another product', done => {
-  //   const product = {
-  //     name: faker.commerce.product(),
-  //     description: faker.commerce.productDescription(),
-  //     price     : faker.commerce.price(),
-  //     stock     : faker.datatype.number(),
-  //     img       : faker.image.imageUrl(),
-  //     timestamp : faker.time.recent(),
-  //     sku       : faker.datatype.number()
-  //   };
-  //   cart.addProduct(product).then( r => {
-  //     expect(r).toMatchObject({ done: true });
-  //     done()
-  //   }).catch( e => {
-  //     cart.disconnect()
-  //     done(e)
-  //   })
-  // });
+  it('Can add another product', done => {
+    const product = {
+      name        : faker.commerce.product(),
+      description : faker.commerce.productDescription(),
+      price       : faker.commerce.price(),
+      stock       : faker.datatype.number(),
+      img         : faker.image.imageUrl(),
+      timestamp   : faker.time.recent(),
+      sku         : faker.datatype.number()
+    };
+    cart.addProduct(product).then( r => {
+      expect(r).toMatchObject({ done: true });
+      done()
+    }).catch( e => {
+      cart.disconnect()
+      done(e)
+    })
+  });
   
-  // it('Can get all products from cart', done => {
+  it('Can get all products from cart', done => {
     
-  //   cart.get().then( r => {
-  //     try {
-  //       expect(r).toMatchObject({ done: true });
-  //       done()
-  //     } catch (error) {
-  //       console.log(error)
-  //       cart.disconnect()
-  //       done(error)
-  //     }
-  //   })
+    cart.get().then( r => {
+      try {
+        expect(r).toMatchObject({ done: true });
+        done()
+      } catch (error) {
+        console.log(error)
+        cart.disconnect()
+        done(error)
+      }
+    })
     
-  // });
+  });
 
-  it('Can get Index of product', () => {
+  it('Can get Index of first product', () => {
+    const id = cart.getProductFromIndex(0).result._id 
     try {
-      expect(cart.getIndex("6235f157919de380892152f7")).toBeGreaterThanOrEqual(0);
+      expect(cart.getIndex(id)).toBe(0);
     } catch (e) {
-      console.log(cart.getIndex("6235f157919de380892152f7"));
+      console.log(cart.getIndex(id));
       cart.disconnect()
     }
   
@@ -90,32 +94,40 @@ describe('My cart works if', ()=> {
     }
   })
   
-  it('Can delete first product from cart', async done => {
+  it('Can delete first product from cart', done => {
 
     const id = cart.getProductFromIndex(0).result._id 
 
     cart.delete(id)
         .then( r => {
           console.log(r);
-          expect(r).toMatchObject({ done: true });
-          done()
+          try {
+            expect(r).toMatchObject({ done: true });
+            done()
+          } catch (error) {
+            done(error)
+            cart.disconnect()
+          }
         })
         .catch(e => {
-          done(e)
+          console.log(e);
+          cart.disconnect()
         })
   })
 
-  // it('Can empty the cart', async done => {
-  //   const msg = await cart.delete()
-
-  //   try {
-  //     expect(msg).toMatchObject({ done: true });
-  //     done()
-  //   } catch (error) {
-  //     console.log(msg);
-  //     cart.disconnect()
-  //     done(error)
-  //   }
+  // it('Can empty the cart', done => {
+  //   cart.delete().then( r => {
+  //     console.log(r);
+  //     try {
+  //       expect(r).toMatchObject({ done: true });
+  //       done()
+  //     } catch (e) {
+  //       cart.disconnect()
+  //       done(e)
+  //     }
+  //   }).catch(e => {
+  //     console.log(e);
+  //   }) 
   // })
 
 })

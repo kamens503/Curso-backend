@@ -1,9 +1,8 @@
-const { Cart: cart } = require('../../src/dao.js'),
-      cart_id = '1a21500f-49ad-45fa-af55-2c193110586b'
-      // cart = new Cart(cart_id)
-
-      // console.log(Cart);
-
+require('dotenv').config()
+const { controller } = require('../../src/config.js'),
+      Cart           = controller.file.Cart
+      cart_id        = process.env.FILE_CART_ID
+      cart           = new Cart(cart_id)
 
 let product_id
 

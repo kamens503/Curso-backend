@@ -1,5 +1,8 @@
-const { Product: products } = require('../../src/dao'),
-	filename = 'products';
+require('dotenv').config()
+const { controller } = require('../../src/config.js'),
+      Product  = controller.file.Product,
+      products = new Product(process.env.FILE_PRODUCT_ID),
+      container_id = process.env.FILE_PRODUCT_ID 
 let product_id
 
 const { faker } = require('@faker-js/faker');
@@ -7,9 +10,9 @@ const { faker } = require('@faker-js/faker');
 describe('My container works if', ()=> {
 
   it('Can Assign a container', () => {
-    let msg = products.assignContainer(filename)
+    let msg = products.assignContainer(container_id)
     try {
-      expect(products.assignContainer(filename)).toBe(true);
+      expect(products.assignContainer(container_id)).toBe(true);
     } catch (error) {
       console.log(msg);
     }
