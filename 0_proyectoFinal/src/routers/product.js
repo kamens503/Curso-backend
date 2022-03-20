@@ -1,3 +1,4 @@
+// TODO: Refactor all endpoints
 const express = require('express'),
       { Router } = express,
       config = require('../config'),

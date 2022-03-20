@@ -1,26 +1,26 @@
 require('dotenv').config()
-const { controller } = require('../src/config.js'),
-      Cart = controller.mongodb.Cart,
-      cart = new Cart(process.env.MONGODB_CONNECTION)
+const { controller } = require('../../src/config.js'),
+      Product = controller.mongodb.Product,
+      products = new Product(process.env.MONGODB_CONNECTION)
 
 
 let product_id
 
 const { faker } = require('@faker-js/faker');
 
-describe('My cart works if', ()=> {
+describe('My products works if', ()=> {
 
   it('Can connect to database and store data to property data', done => {
-    cart.syncLocalData().then(r => {
+    products.syncLocalData().then(r => {
       done()
     }).catch(e => {
-      cart.disconnect()
+      products.disconnect()
       done(e)
     })
   });
 
 
-  it('Can add product to cart', done => {
+  it('Can add product to products', done => {
     const product = {
       name        : faker.commerce.product(),
       description : faker.commerce.productDescription(),
@@ -30,11 +30,11 @@ describe('My cart works if', ()=> {
       timestamp   : faker.time.recent(),
       sku         : faker.datatype.number()
     };
-    cart.addProduct(product).then( r => {
+    products.addProduct(product).then( r => {
       expect(r).toMatchObject({ done: true });
       done()
     }).catch( e => {
-      cart.disconnect()
+      products.disconnect()
       done(e)
     })
   });
@@ -49,24 +49,24 @@ describe('My cart works if', ()=> {
       timestamp   : faker.time.recent(),
       sku         : faker.datatype.number()
     };
-    cart.addProduct(product).then( r => {
+    products.addProduct(product).then( r => {
       expect(r).toMatchObject({ done: true });
       done()
     }).catch( e => {
-      cart.disconnect()
+      products.disconnect()
       done(e)
     })
   });
   
-  it('Can get all products from cart', done => {
+  it('Can get all products from products', done => {
     
-    cart.get().then( r => {
+    products.get().then( r => {
       try {
         expect(r).toMatchObject({ done: true });
         done()
       } catch (error) {
         console.log(error)
-        cart.disconnect()
+        products.disconnect()
         done(error)
       }
     })
@@ -74,12 +74,12 @@ describe('My cart works if', ()=> {
   });
 
   it('Can get Index of first product', () => {
-    const id = cart.getProductFromIndex(0).result._id 
+    const id = products.getProductFromIndex(0).result._id 
     try {
-      expect(cart.getIndex(id)).toBe(0);
+      expect(products.getIndex(id)).toBe(0);
     } catch (e) {
-      console.log(cart.getIndex(id));
-      cart.disconnect()
+      console.log(products.getIndex(id));
+      products.disconnect()
     }
   
   })
@@ -87,18 +87,18 @@ describe('My cart works if', ()=> {
   
   it('Can get first product Index', () => { 
     try {
-      expect(cart.getProductFromIndex(0)).toMatchObject({ done: true });  
+      expect(products.getProductFromIndex(0)).toMatchObject({ done: true });  
     } catch (error) {
-      console.log(cart.getProductFromIndex(0))
-      cart.disconnect()
+      console.log(products.getProductFromIndex(0))
+      products.disconnect()
     }
   })
   
-  it('Can delete first product from cart', done => {
+  it('Can delete first product from products', done => {
 
-    const id = cart.getProductFromIndex(0).result._id 
+    const id = products.getProductFromIndex(0).result._id 
 
-    cart.delete(id)
+    products.delete(id)
         .then( r => {
           console.log(r);
           try {
@@ -106,23 +106,23 @@ describe('My cart works if', ()=> {
             done()
           } catch (error) {
             done(error)
-            cart.disconnect()
+            products.disconnect()
           }
         })
         .catch(e => {
           console.log(e);
-          cart.disconnect()
+          products.disconnect()
         })
   })
 
-  // it('Can empty the cart', done => {
-  //   cart.delete().then( r => {
+  // it('Can empty the products', done => {
+  //   products.delete().then( r => {
   //     console.log(r);
   //     try {
   //       expect(r).toMatchObject({ done: true });
   //       done()
   //     } catch (e) {
-  //       cart.disconnect()
+  //       products.disconnect()
   //       done(e)
   //     }
   //   }).catch(e => {

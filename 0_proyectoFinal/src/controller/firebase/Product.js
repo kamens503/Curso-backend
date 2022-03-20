@@ -1,3 +1,4 @@
+// TODO: Refactor Class
 class Product {
      constructor (filename) {
         this.filename = filename

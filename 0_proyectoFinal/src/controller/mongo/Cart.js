@@ -74,7 +74,7 @@ class Cart {
   }
   
 
-  isProductInCart = (id) => {
+  isProductInContainer = (id) => {
     if (typeof product_id !== 'number') return false
 
     const exist = this.data.find(product => product?.id === id) ?
@@ -131,9 +131,9 @@ class Cart {
   }
 
   getIndex = (id) => {
-    const result = this.data.findIndex(product => {
+    const result       = this.data.findIndex(product => {
       const product_id = JSON.stringify(product._id)
-      const equal = product_id.replace(/"/g,"") == id 
+      const equal      = product_id.replace(/"/g,"") == id 
       return equal
     })
     return result

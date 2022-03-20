@@ -72,7 +72,7 @@ class Cart {
   }
   
 
-  isProductInCart = (id) => {
+  isProductInContainer = (id) => {
     if (isNaN(id)) return false
 
     const exist = this.data.products.find(product => product?.id === id) ?

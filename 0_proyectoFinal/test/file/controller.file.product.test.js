@@ -32,7 +32,7 @@ describe('My container works if', ()=> {
       img: faker.image.imageUrl(),
       timestamP: faker.time.recent(),
     };
-    expect(products.add(product)).toMatchObject({ done: true });
+    expect(products.addProduct(product)).toMatchObject({ done: true });
   });
 
   it('Can add another product', () => {
@@ -44,7 +44,7 @@ describe('My container works if', ()=> {
       img: faker.image.imageUrl(),
       timestamP: faker.time.recent(),
     };
-    expect(products.add(product)).toMatchObject({ done: true });
+    expect(products.addProduct(product)).toMatchObject({ done: true });
   });
   
   it('Can get all products', () => {

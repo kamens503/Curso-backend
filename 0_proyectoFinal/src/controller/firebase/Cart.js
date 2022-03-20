@@ -1,3 +1,4 @@
+// TODO: Refactor Class
 class Cart {
     constructor (id) {
         this.id = id

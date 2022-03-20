@@ -1,3 +1,5 @@
+// TODO: Refactor all endpoints
+
 const express = require('express'),
       { Router } = express,
       { v4: uuidv1 } = require('uuid'),
@@ -5,6 +7,8 @@ const express = require('express'),
       Cart = config.controller.file.cart
 
       user = config.user;
+
+      
 
 /** Cart API component, contains all the CRUD routes
  * @type { Router } 

@@ -5,8 +5,8 @@ module.exports.endpoints = {
 
 module.exports.controller = {
     file: {
-        Product: require('./controller/file/Product'),
-        Cart   : require('./controller/file/Cart')
+        Product : require('./controller/file/Product'),
+        Cart    : require('./controller/file/Cart')
     },
     firebase: {
         Product : require('./controller/firebase/Product'),
