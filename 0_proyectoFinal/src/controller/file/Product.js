@@ -153,7 +153,7 @@ class Product {
 
 	delete = (product_id = false) => {
     //Delete all cart if empty
-		if (typeof product_id !== 'number') {
+		if ( product_id === false && typeof product_id !== 'number') {
       try {
         this.fs.unlinkSync(this.path);
 

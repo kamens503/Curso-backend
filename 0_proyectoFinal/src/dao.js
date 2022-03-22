@@ -26,11 +26,15 @@ switch (container.provider) {
   case 'firebase':
     Cart    = controller.firebase.Cart
     Product = controller.firebase.Product
+    cartId    = process.firebase.collection.cart
+    productId = process.firebase.collection.product
     break;
 
   default:
     Cart    = controller.file.Cart
     Product = controller.file.Product
+    cartId    = container.file.name.cart
+    productId = container.file.name.product
     break;
 }
 

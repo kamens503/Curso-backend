@@ -1,13 +1,18 @@
-// const mongoose = require('mongoose')
-// const model = require('./models/cart.model.js')
+const admin = require("firebase-admin"),
+      serviceAccount = require("./accountKey"),
+      test_key = require('./firebase_key.json'),
+      { v4: uuidv1 } = require('uuid')
+
+admin.initializeApp({
+  credential: admin.credential.cert(test_key)
+});
 
 class Cart {
-  constructor(conexion = false) {
-    this.conexion = conexion
-    if (!conexion) {
-      throw 'Error: Invalid mongodb conexion path'
+  constructor(name = false) {
+    if (typeof name !== 'string') {
+      throw 'Error: Invalid collection name'
     }
-
+		this.name = name
     this.timestamp = Date.now()
     this.on = {
       denied: "No tienes permiso para hacer esta acción",
@@ -38,14 +43,30 @@ class Cart {
       price: 0,
       stock: 0
     }
-    this.client = mongoose
-    this.client.connect(this.conexion)
+    this.db
+    this.collection
+    this.data = []
+  }
+
+  async init() {
+    try {
+      this.db =  admin.firestore()
+      this.collection = this.db.collection(this.name)
+      await this.syncLocalData()
+
+      return { done: true, result: 'Cart init sucessfully'}
+    } catch (error) {
+      return { done: false, result: error}
+    }
+    
   }
 
   async syncLocalData() {
     
       try {
-        this.data = await model.find().exec()
+        const raw_data = await this.collection.get()
+        raw_data.forEach( doc => this.data.push(doc.data()))
+        this.data.sort( (a, b) => a.timestamp > b.timestamp)
         return true
       } catch (e) {
           console.log(e);
@@ -54,13 +75,14 @@ class Cart {
   }
 
   disconnect(){
-    this.client.disconnect().catch(e => {console.log(e);})
+    return {done: true, result: 'No need to disconnect from firebase'}
   }
 
   async saveProduct(product) {
-    const new_product = new model(product)
+    const new_product = product
+    new_product.id = uuidv1()
     try {
-      await new_product.save()
+      await this.collection.doc(new_product.id).set(new_product)
       
     } catch (error) {
         console.log(error);
@@ -94,7 +116,6 @@ class Cart {
     }
     
     const msg = await this.saveProduct(newProduct)
-    this.data = await this.syncLocalData(this.conexion)
 
     return msg.done ? {
       done: msg.done,
@@ -111,7 +132,7 @@ class Cart {
     const result = typeof product_id === 'number' 
                   ? {
                     done: true,
-                    result: this.data.find(product => product?.id === product_id).exec()
+                    result: this.data.find(product => product?.id === product_id)
                   } 
                   : {
                     done: true,
@@ -128,27 +149,18 @@ class Cart {
   }
 
   getIndex = (id) => {
-    const result       = this.data.findIndex(product => {
-      const product_id = JSON.stringify(product._id)
-      const equal      = product_id.replace(/"/g,"") == id 
-      return equal
-    })
+    const result       = this.data.findIndex(product => product.id == id)
     return result
   }
 
-  getProductFromIndex = (index) => {
-    const {name, price, description, sku, img, stock, timestamp, _id: product_id} = this.data[index]
-    const id = JSON.stringify(product_id)
-    const end_product = { name, price, description, sku, img, stock, timestamp , _id: id.replace(/"/g,"")}
-
+  getProductByIndex = (index) => {
+    const end_product = this.data[index]
     return end_product ? { done: true, result: end_product }
                    : { done: false, result: this.on.notFound.product }
   }
 
-  update = (product_id) => {
-
-
-    const index = this.getIndex(id).result
+  async update (product_id, productObj) {
+    const index = this.getIndex(product_id)
     productObj.timestamp = Date.now()
 
     const newProduct = {
@@ -156,8 +168,7 @@ class Cart {
       ...productObj
     }
 
-    const msg = saveProduct(newProduct)
-    this.syncLocalData(this.conexion)
+    const msg = await this.saveProduct(newProduct)
 
     return msg.done ? {
       done: msg.done,
@@ -168,11 +179,17 @@ class Cart {
     }
   }
 
-  async delete (product_id = false) {
+  async delete (product_id = -1) {
     
-    if (typeof product_id !== 'number') {
+    if ( product_id <= -1) {
+      console.log('Deleteng alll');
       try {
-        await this.client.connection.db.dropCollection(config.container.collection.cart)
+        const documents = await this.collection.get()
+        const batch = this.db.batch();
+        documents.docs.forEach(doc => {
+          batch.delete(doc.ref)
+        });
+        await batch.commit()
         delete this.data;
         return {done: true, result: this.on.deleted.success}
       } catch (error) {
@@ -189,7 +206,7 @@ class Cart {
 
     delete this.data[index]
     try {
-      await model.find({ _id: product_id }).remove().exec();
+      await this.collection.doc(product_id).delete();
       return { done: true, result: this.on.deleted.success }
     } catch (error) {
       return { done: false, result: this.on.deleted.fail + error }

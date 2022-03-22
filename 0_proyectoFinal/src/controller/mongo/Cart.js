@@ -116,7 +116,7 @@ class Cart {
     const result = typeof product_id === 'number' 
                   ? {
                     done: true,
-                    result: this.data.find(product => product?.id === product_id).exec()
+                    result: this.data.find(product => product?.id === product_id)
                   } 
                   : {
                     done: true,
@@ -141,7 +141,7 @@ class Cart {
     return result
   }
 
-  getProductFromIndex = (index) => {
+  getProductByIndex = (index) => {
     const {name, price, description, sku, img, stock, timestamp, _id: product_id} = this.data[index]
     const id = JSON.stringify(product_id)
     const end_product = { name, price, description, sku, img, stock, timestamp , _id: id.replace(/"/g,"")}
@@ -153,7 +153,7 @@ class Cart {
   update = (product_id) => {
 
 
-    const index = this.getIndex(id).result
+    const index = this.getIndex(product_id).result
     productObj.timestamp = Date.now()
 
     const newProduct = {
@@ -175,7 +175,7 @@ class Cart {
 
   async delete (product_id = false) {
     
-    if (typeof product_id !== 'number') {
+    if ( product_id === false) {
       try {
         await this.client.connection.db.dropCollection(collection)
         delete this.data;

@@ -1,6 +1,6 @@
 require('dotenv').config()
 const { container } = require('../../src/config.js'),
-      Product = require("../../src/controller/mongo/Product"),
+      Product = require("../../src/controller/firebase/Product"),
       products = new Product(container.mongodb.host)
 
 
@@ -8,7 +8,7 @@ let product_id
 
 const { faker } = require('@faker-js/faker');
 
-describe(' [ MONGO.DB ] My products works if', ()=> {
+describe(' [ Firebase ] My products works if', ()=> {
 
   it('Can sync database data to local data', done => {
     products.syncLocalData().then(r => {

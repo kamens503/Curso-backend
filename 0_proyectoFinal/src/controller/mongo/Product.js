@@ -113,7 +113,7 @@ class Product {
     const result = typeof product_id === 'number' 
                   ? {
                     done: true,
-                    result: this.data.find(product => product?.id === product_id).exec()
+                    result: this.data.find(product => product?.id === product_id)
                   } 
                   : {
                     done: true,
@@ -138,7 +138,7 @@ class Product {
     return result
   }
 
-  getProductFromIndex = (index) => {
+  getProductByIndex = (index) => {
     const {name, price, description, sku, img, stock, timestamp, _id: product_id} = this.data[index]
     const id = JSON.stringify(product_id)
     const end_product = { name, price, description, sku, img, stock, timestamp , _id: id.replace(/"/g,"")}
@@ -172,7 +172,7 @@ class Product {
 
   async delete (product_id = false) {
     
-    if (typeof product_id !== 'number') {
+    if ( product_id === false) {
       try {
         await mongoose.connection.db.dropCollection(collection)
         delete this.data;

@@ -146,7 +146,7 @@ class Cart {
     return result
   }
 
-  getProductFromIndex = (index) => {
+  getProductByIndex = (index) => {
     const product = this.data.products[index]
 
     return product ? { done: true, result: product }
@@ -187,7 +187,7 @@ class Cart {
       done: false,
       result: this.on.notFound.cart
     }
-    if (typeof product_id !== 'number') {
+    if ( product_id === false) {
       try {
         this.fs.unlinkSync(this.path);
 

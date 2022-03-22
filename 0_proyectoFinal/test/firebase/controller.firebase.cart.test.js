@@ -1,20 +1,22 @@
 require('dotenv').config()
 const { container } = require('../../src/config.js'),
-      Cart  = require("../../src/controller/mongo/Cart"),
-      cart  = new Cart(container.mongodb.host)
+      Cart  = require("../../src/controller/firebase/Cart"),
+      cart  = new Cart(container.firebase.collection.cart)
 
-
-let product_id
+console.log(cart.data);
 
 const { faker } = require('@faker-js/faker');
 
-describe(' [ MONGO.DB ] My cart works if', ()=> {
+describe(' [ Firebase ] My cart works if', ()=> {
+
+  it('Can init cart', async () => {
+    const msg = await cart.init()
+    expect(msg).toMatchObject({ done: true });
+  })
 
   it('Can sync database data to local data', async () => {
-    return cart.syncLocalData()
-                .catch(e => {
-                  console.log(e);
-                })
+    const msg = await cart.syncLocalData() 
+    expect(msg).toBe(true);
   });
 
 
@@ -28,10 +30,8 @@ describe(' [ MONGO.DB ] My cart works if', ()=> {
       timestamp   : faker.time.recent(),
       sku         : faker.datatype.number()
     };
-    cart.addProduct(product).then( r => {
-      expect(r).toMatchObject({ done: true });
-    }).catch( e => {
-    })
+    const msg = await cart.addProduct(product)
+    expect(msg).toMatchObject({ done: true });
   });
 
   it('Can add another product', () => {
@@ -44,21 +44,21 @@ describe(' [ MONGO.DB ] My cart works if', ()=> {
       timestamp   : faker.time.recent(),
       sku         : faker.datatype.number()
     };
-    cart.addProduct(product).then( r => {
-      expect(r).toMatchObject({ done: true });
-    }).catch( e => {
-    })
+    const msg = await cart.addProduct(product)
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(msg)
+    }
   });
   
   it('Can get all products from cart', async () => {
-    
-    return cart.get().then( r => {
-      try {
-        expect(r).toMatchObject({ done: true });
-      } catch (error) {
-        console.log(error)
-      }
-    })
+    const msg = await cart.get()
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(msg)
+    }
     
   });
 
@@ -84,38 +84,30 @@ describe(' [ MONGO.DB ] My cart works if', ()=> {
   it('Can delete first product from cart', async () => {
 
     const id = cart.getProductByIndex(0).result._id 
-
-    return cart.delete(id)
-        .then( r => {
-          console.log(r);
-          try {
-            expect(r).toMatchObject({ done: true });
-          } catch (error) {
-            console.log(error);
-          }
-        })
-        .catch(e => {
-          console.log(e);
-        })
+    const msg = await cart.delete(id)
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(msg);
+    }
   })
 
   it('Can empty the cart', async () => {
-    return cart.delete().then( r => {
-      try {
-        expect(r).toMatchObject({ done: true });
-      } catch (e) {
-      }
-    }).catch(e => {
-      console.log(e);
-    }) 
+    const msg = await cart.delete()
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(msg);
+    }
   })
 
-  // It may disconnect before finish the others test Enable it only to test disconnect method
-  // it('Can disconect from Database', async () => {
-  //   return cart.disconnect()
-  //           .catch(e => {
-  //             console.log(e);
-  //           })
-  // });
+  it('Can disconect from Database', async () => {
+    const msg = await cart.disconnect()
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(msg);
+    }
+  });
 
 })

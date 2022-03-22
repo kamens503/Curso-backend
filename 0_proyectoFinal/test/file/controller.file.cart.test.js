@@ -54,7 +54,7 @@ describe(' [ FILE ] My cart works if', ()=> {
 
   
   it('Can get first product Index', () => { 
-    expect(cart.getProductFromIndex(0)).toMatchObject({ done: true });  
+    expect(cart.getProductByIndex(0)).toMatchObject({ done: true });  
   })
   
   it('Can get first product from cart', () => {
@@ -62,7 +62,7 @@ describe(' [ FILE ] My cart works if', ()=> {
   });
   
   it('Can delete first product from cart', () => {
-    product_id = cart.getProductFromIndex(0).result.id
+    product_id = cart.getProductByIndex(0).result.id
     const product = cart.delete(product_id)
     expect(product).toMatchObject({ done: true });
   })
