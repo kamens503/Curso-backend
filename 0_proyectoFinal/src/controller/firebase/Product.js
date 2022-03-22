@@ -3,9 +3,7 @@ const admin = require("firebase-admin"),
       test_key = require('./firebase_key.json'),
       { v4: uuidv1 } = require('uuid')
 
-admin.initializeApp({
-  credential: admin.credential.cert(test_key)
-});
+
 
 class Product {
   constructor(name = false) {
@@ -49,13 +47,16 @@ class Product {
 
   async init() {
     try {
+      admin.initializeApp({
+        credential: admin.credential.cert(test_key)
+      });
       this.db =  admin.firestore()
       this.collection = this.db.collection(this.name)
       await this.syncLocalData()
 
       return { done: true, result: 'Container init sucessfully'}
     } catch (error) {
-      return { done: false, result: error}
+      return { done: false, result: `Couldnt init: ${error}`}
     }
     
   }
@@ -74,7 +75,12 @@ class Product {
 }
 
   disconnect(){
-    return {done: true, result: 'No need to disconnect from firebase'}
+    try {
+      admin.app().delete()
+      return {done: true, result: 'Disconnected'}
+    } catch (error) {
+      return {done: false, result : error}
+    }
   }
 
   async saveProduct(product) {
@@ -181,7 +187,7 @@ class Product {
   async delete (product_id = -1) {
     
     if ( product_id <= -1) {
-      console.log('Deleteng alll');
+      console.log('Warning: Deleting all data');
       try {
         const documents = await this.collection.get()
         const batch = this.db.batch();

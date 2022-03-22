@@ -10,12 +10,18 @@ const { faker } = require('@faker-js/faker');
 
 describe(' [ MONGO.DB ] My products works if', ()=> {
 
-  it('Can sync database data to local data', done => {
-    products.syncLocalData().then(r => {
-      done()
-    }).catch(e => {
-      done(e)
-    })
+  it('Can init products', async () => {
+    const msg = await products.init()
+    expect(msg).toMatchObject({ done: true });
+  })
+
+  it('Can sync database data to local data', async () => {
+    const msg = await products.syncLocalData()
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(error);
+    }
   });
 
 
@@ -29,11 +35,13 @@ describe(' [ MONGO.DB ] My products works if', ()=> {
       timestamp   : faker.time.recent(),
       sku         : faker.datatype.number()
     };
-    return products.addProduct(product).then( r => {
-      expect(r).toMatchObject({ done: true });
-    }).catch( e => {
-      console.log(e);
-    })
+
+    const msg = await products.addProduct(product)
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   it('Can add another product', async () => {
@@ -46,18 +54,22 @@ describe(' [ MONGO.DB ] My products works if', ()=> {
       timestamp   : faker.time.recent(),
       sku         : faker.datatype.number()
     };
-    return products.addProduct(product).then( r => {
-      expect(r).toMatchObject({ done: true });
-    }).catch( e => {
-      console.log(e);
-    })
+
+    const msg = await products.addProduct(product)
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(error);
+    }
   });
   
   it('Can get all products from products', async () => {
-    
-    return products.get().then( r => {
-      expect(r).toMatchObject({ done: true });
-    })
+    const msg = await products.get()
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(error);
+    }
     
   });
 
@@ -84,29 +96,30 @@ describe(' [ MONGO.DB ] My products works if', ()=> {
 
     const id = products.getProductByIndex(0).result._id 
 
-    return products.delete(id)
-        .then( r => {
-          expect(r).toMatchObject({ done: true });
-        })
-        .catch(e => {
-          console.log(e);
-        })
+    const msg = await products.delete(id)
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(error);
+    }
   })
 
   it('Can empty the products', async () => {
-    return products.delete().then( r => {
-      expect(r).toMatchObject({ done: true });
-    }).catch(e => {
-      console.log(e);
-    }) 
+    const msg = await products.delete()
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(error);
+    }
   })
 
-    // It may disconnect before finish the others test Enable it only to test disconnect method
-  // it('Can disconect from Database', async () => {
-  //   return cart.disconnect()
-  //           .catch(e => {
-  //             console.log(e);
-  //           })
-  // });
+  it('Can disconect from Database', async () => {
+    const msg = await products.disconnect()
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(error);
+    }
+  })
 
 })

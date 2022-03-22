@@ -6,7 +6,7 @@ module.exports.endpoints = {
 
 
 module.exports.container = {
-	provider : "firebase", //Available -> File / mongodb / firebase
+	provider : "mongodb", //Available -> file / mongodb / firebase
   mongodb  : {
     host : "mongodb+srv://admin:admin@cluster0.ejm1d.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     collection: {
@@ -34,10 +34,10 @@ module.exports.controller = {
 		Product : require('./controller/file/Product'),
 		Cart    : require('./controller/file/Cart'),
 	},
-	// firebase: {
-	// 	Product : require('./controller/firebase/Product'),
-	// 	Cart    : require('./controller/firebase/Cart'),
-	// },
+	firebase: {
+		Product : require('./controller/firebase/Product'),
+		Cart    : require('./controller/firebase/Cart'),
+	},
 	mongodb: {
 		Product : require('./controller/mongo/Product'),
 		Cart    : require('./controller/mongo/Cart'),

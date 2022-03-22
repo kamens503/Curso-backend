@@ -32,8 +32,20 @@ class Cart {
       price: 0,
       stock: 0
     }
-    this.data = id ? this.getFile(__dirname + `/data/cart_${id}.json`) : {}
-    this.path = __dirname + `/data/cart_${this.id}.json`
+    this.data = {}
+    this.path = ''
+    
+  }
+  init() {
+    try {
+      this.data = id ? this.getFile(__dirname + `/data/cart_${id}.json`) : {}
+      this.path = __dirname + `/data/cart_${this.id}.json`
+      return {done: true, result: 'Cart init successfully'}  
+    } catch (error) {
+      console.log(error);
+      return {done: true, result: 'Cart couldnt init:', error}  
+    }
+    
   }
 
   getFile(path) {
@@ -46,7 +58,7 @@ class Cart {
     return JSON.parse(this.fs.readFileSync(path, 'utf-8'))
   }
 
-  rewrite = () => {
+  syncLocalData = () => {
     try {
       this.fs.writeFileSync(this.path, JSON.stringify(this.data))
       return {
@@ -103,7 +115,7 @@ class Cart {
     }
     this.data.products.push(newProduct)
 
-    const msg = this.rewrite()
+    const msg = this.syncLocalData()
 
     return msg.done ? {
       done: msg.done,
@@ -153,14 +165,15 @@ class Cart {
                    : { done: false, result: this.on.notFound.product }
   }
 
-  update = (product_id, id = false) => {
+  update = (product_id, productObj, id = false) => {
     const assigned = id ? this.assignCart(id) : this.assignCart(this.id)
     if (!assigned) return {
       done: false,
       result: this.on.notFound.cart
     }
 
-    const index = this.getIndex(id).result
+    const index = this.getIndex(product_id).result
+    if (typeof index !== 'number') return {done: false, result: this.on.notFound}
     productObj.timestamp = Date.now()
 
     this.data.products[index] = {
@@ -168,10 +181,9 @@ class Cart {
       ...productObj
     }
 
-    console.log(this.data.products[index]);
 
 
-    const msg = this.rewrite()
+    const msg = this.syncLocalData()
     return msg.done ? {
       done: msg.done,
       result: this.on.modified.success
@@ -206,7 +218,7 @@ class Cart {
     if (typeof index !== 'number') return {done: false, result: this.on.notFound.product}
 
     delete this.data.products[index]
-    const msg = this.rewrite()
+    const msg = this.syncLocalData()
     return msg.done ? {
       done: true,
       result: this.on.deleted.success

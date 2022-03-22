@@ -9,6 +9,11 @@ const { faker } = require('@faker-js/faker');
 
 describe(' [ FILE ] My Product container works if', ()=> {
 
+  it('Can init container', async () => {
+    const msg = await cart.init()
+    expect(msg).toMatchObject({ done: true });
+  })
+
   it('Can Assign a container', () => {
     let msg = products.assignContainer(container_id)
     try {
@@ -20,7 +25,7 @@ describe(' [ FILE ] My Product container works if', ()=> {
   });
 
   it('Can update database/file', () => {
-    expect(products.rewrite()).toMatchObject({ done: true });
+    expect(products.syncLocalData()).toMatchObject({ done: true });
   });
 
   it('Can add product to container', () => {

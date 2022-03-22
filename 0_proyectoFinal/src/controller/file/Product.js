@@ -28,9 +28,21 @@ class Product {
 			price: 0,
 			stock: 0,
 		};
-    this.data = filename ? this.getFile(__dirname + `/data/${filename}.json`) : {}
-    this.path = __dirname + `/data/${this.filename}.json`
+    this.data = {}
+    this.path = ''
 	}
+
+  init() {
+    try {
+      this.data = id ? this.getFile(__dirname + `/data/cart_${id}.json`) : {}
+      this.path = __dirname + `/data/cart_${this.id}.json`
+      return {done: true, result: 'Cart init successfully'}  
+    } catch (error) {
+      console.log(error);
+      return {done: true, result: 'Cart couldnt init:', error}  
+    }
+    
+  }
 
   assignContainer(name) {
     this.filename = name
@@ -42,7 +54,7 @@ class Product {
     return true;
   }
   
-  rewrite = () => {
+  syncLocalData = () => {
     try {
       this.fs.writeFileSync(this.path, JSON.stringify(this.data))
       return {
@@ -92,7 +104,7 @@ class Product {
     }
     this.data.products.push(newProduct)
 
-    const msg = this.rewrite()
+    const msg = this.syncLocalData()
 
     return msg.done ? {
       done: msg.done,
@@ -135,17 +147,16 @@ class Product {
                    : { done: false, result: this.on.notFound }
   }
 
-	update = (id, productObj) => {
+	update = (product_id, productObj) => {
 
 		const index = this.getIndex(product_id)
     if (typeof index !== 'number') return {done: false, result: this.on.notFound}
 
-		console.log(index);
 		productObj.timestamp = Date.now();
 
 		this.data.products[index] = { ...this.data.products[index], ...productObj };
 
-		const msg = this.rewrite();
+		const msg = this.syncLocalData();
 		return msg.done
 			? { done: msg.done, result: this.on.modified.success }
 			: { done: msg.done, result: msg.result };
@@ -172,7 +183,7 @@ class Product {
     if (typeof index !== 'number') return {done: false, result: this.on.notFound}
 
     delete this.data.products[index]
-    const msg = this.rewrite()
+    const msg = this.syncLocalData()
     return msg.done ? {
       done: true,
       result: this.on.deleted.success

@@ -7,6 +7,8 @@ const { container } = require('./src/config'),
       Product  = require("./src/controller/firebase/Product"),
       product  = new Product(container.firebase.collection.product)
 
+
+
 async function  test () {
   console.log(await product.init());
   const new_product = {

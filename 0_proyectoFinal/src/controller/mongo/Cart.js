@@ -40,26 +40,40 @@ class Cart {
       price: 0,
       stock: 0
     }
-    this.client = mongoose
-    this.db = this.client.connect(this.conexion)
+    
+  }
+
+  async init() {
+    try {
+      this.client = mongoose
+      this.db = this.client.connect(this.conexion)
+
+      return {done: true, result: 'Connect to mongoose database'}
+
+    } catch (error) {
+      return {done: false, result: 'Failed to connect'}
+    }
   }
 
   async syncLocalData() {
     
       try {
         this.data = await model.find().exec()
-        return true
+        return {done: true, result: 'Synced'}
       } catch (e) {
           console.log(e);
-          return false
+          return {done: false, result: 'Synced'}
       }
   }
 
   async disconnect(){
-    this.db.disconnect()
-          .catch(e => {
-            console.log('Error a desconectarse',e);
-          })
+    try {
+      await this.client.disconnect()
+
+      return {done: true, result: 'Disconnected from mongoose'}
+    } catch (error) {
+      return {done: false, result: `Couldnt disconnect: ${error}`}
+    }
   }
 
   async saveProduct(product) {
@@ -150,7 +164,7 @@ class Cart {
                    : { done: false, result: this.on.notFound.product }
   }
 
-  update = (product_id) => {
+  async update (product_id, productObj) {
 
 
     const index = this.getIndex(product_id).result
@@ -161,8 +175,8 @@ class Cart {
       ...productObj
     }
 
-    const msg = saveProduct(newProduct)
-    this.syncLocalData()
+    const msg = await this.saveProduct(newProduct)
+    this.syncLocalData(this.conexion)
 
     return msg.done ? {
       done: msg.done,

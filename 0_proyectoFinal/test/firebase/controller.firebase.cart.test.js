@@ -3,7 +3,6 @@ const { container } = require('../../src/config.js'),
       Cart  = require("../../src/controller/firebase/Cart"),
       cart  = new Cart(container.firebase.collection.cart)
 
-console.log(cart.data);
 
 const { faker } = require('@faker-js/faker');
 
@@ -20,7 +19,7 @@ describe(' [ Firebase ] My cart works if', ()=> {
   });
 
 
-  it('Can add product to cart', () => {
+  it('Can add product to cart', async () => {
     const product = {
       name        : faker.commerce.product(),
       description : faker.commerce.productDescription(),
@@ -34,7 +33,7 @@ describe(' [ Firebase ] My cart works if', ()=> {
     expect(msg).toMatchObject({ done: true });
   });
 
-  it('Can add another product', () => {
+  it('Can add another product', async () => {
     const product = {
       name        : faker.commerce.product(),
       description : faker.commerce.productDescription(),

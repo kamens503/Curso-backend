@@ -10,6 +10,12 @@ const { faker } = require('@faker-js/faker');
 
 describe(' [ Firebase ] My products works if', ()=> {
 
+
+  it('Can init container', async () => {
+    const msg = await products.init()
+    expect(msg).toMatchObject({ done: true });
+  })
+  
   it('Can sync database data to local data', done => {
     products.syncLocalData().then(r => {
       done()
@@ -101,12 +107,12 @@ describe(' [ Firebase ] My products works if', ()=> {
     }) 
   })
 
-    // It may disconnect before finish the others test Enable it only to test disconnect method
-  // it('Can disconect from Database', async () => {
-  //   return cart.disconnect()
-  //           .catch(e => {
-  //             console.log(e);
-  //           })
-  // });
-
+  it('Can disconect from Database', async () => {
+    const msg = await products.disconnect()
+    try {
+      expect(msg).toMatchObject({ done: true });
+    } catch (error) {
+      console.log(msg);
+    }
+  });
 })
