@@ -90,7 +90,6 @@ class Product {
 
 
   isProductInContainer = (id) => {
-    if (typeof product_id !== 'number') return false
 
     const exist = this.data.find(product => product?.id === id) ?
       this.data.find(product => product?.id === id) :

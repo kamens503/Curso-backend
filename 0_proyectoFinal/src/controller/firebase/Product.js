@@ -23,7 +23,7 @@ class Product {
         fail: 'Algo salió mal! No se pude borrar'
       },
       notFound: {
-        product: "Carrito no encontrado"
+        product: "Producto/s no encontrado"
       },
       default: {
         success: 'Acción realizada con éxito',
@@ -87,22 +87,22 @@ class Product {
   async saveProduct(product) {
     const new_product = product
     new_product.id = uuidv1()
+    let loaded_product
     try {
-      await this.collection.doc(new_product.id).set(new_product)
+      loaded_product = await this.collection.doc(new_product.id).set(new_product)
       
     } catch (error) {
         console.log(error);
         return {done: false, result: error}
     }
-    await this.syncLocalData()
-    return {done: true, result: this.on.modified.success}
+    await this.syncLocalData()    
+    return {done: true, result: new_product}
   }
   
 
   isProductInContainer = (id) => {
-    if (typeof product_id !== 'number') return false
 
-    const exist = this.data.find(product => product?.id === id) ?
+    const exist = this.data.find(product => product?.id == id) ?
       this.data.find(product => product?.id === id) :
       false
 
@@ -125,7 +125,7 @@ class Product {
 
     return msg.done ? {
       done: msg.done,
-      result: this.on.modified.success
+      result: msg.result
     } : {
       done: false,
       result: `${this.on.modified.fail} : ${msg.result}`
@@ -133,12 +133,12 @@ class Product {
 
   }
 
-   get = async (product_id = false) => {
+   get = async (product_id = -1) => {
     await this.syncLocalData()
-    const result = typeof product_id === 'number' 
+    const result = product_id != -1 
                   ? {
                     done: true,
-                    result: this.data.find(product => product?.id === product_id)
+                    result: this.data.find(product => product?.id == product_id)
                   } 
                   : {
                     done: true,
@@ -173,12 +173,11 @@ class Product {
       ...this.data[index],
       ...productObj
     }
-
-    const msg = this.saveProduct(newProduct)
-
+    console.log(productObj);
+    const msg = await this.saveProduct(newProduct)
     return msg.done ? {
-      done: msg.done,
-      result: this.on.modified.success
+      done:true,
+      result: msg.result
     } : {
       done: msg.done,
       result: `${this.on.modified.fail} : ${msg.result}`

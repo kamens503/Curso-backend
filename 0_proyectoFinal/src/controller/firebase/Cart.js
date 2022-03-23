@@ -22,8 +22,8 @@ class Cart {
         fail: 'Algo salió mal! No se pude borrar'
       },
       notFound: {
-        cart: "Producto no encontrado",
-        product: "Carrito no encontrado"
+        cart: "Carrito no encontrado",
+        product: "Producto no encontrado"
       },
       default: {
         success: 'Acción realizada con éxito',
@@ -99,23 +99,23 @@ class Cart {
   async saveProduct(product) {
 
     const new_product = product
-    new_product.id = uuidv1()
+    let loaded_product
     try {
-      await this.collection.doc(new_product.id).set(new_product)
+      loaded_product = await this.collection.doc(new_product.id).set(new_product)
       
     } catch (error) {
         console.log(error);
         return {done: false, result: error}
     }
     await this.syncLocalData()
-    return {done: true, result: this.on.modified.success}
+    return {done: true, result: new_product}
   }
   
 
   isProductInContainer = (id) => {
 
-    const exist = this.data.find(product => product?.id === id) ?
-      this.data.find(product => product?.id === id) :
+    const exist = this.data.find(product => product?.id == id) ?
+      this.data.find(product => product?.id == id) :
       false
 
     if (id && !exist || id && exist == undefined) {
@@ -132,6 +132,7 @@ class Cart {
       ...this.template,
       ...product
     }
+    new_product.id = uuidv1()
     
     const msg = await this.saveProduct(newProduct)
 
@@ -145,9 +146,9 @@ class Cart {
 
   }
 
-   get = async (product_id = false) => {
+   get = async (product_id = -1) => {
     await this.syncLocalData()
-    const result = typeof product_id === 'number' 
+    const result = typeof product_id !== -1
                   ? {
                     done: true,
                     result: this.data.find(product => product?.id === product_id)
@@ -190,7 +191,7 @@ class Cart {
 
     return msg.done ? {
       done: msg.done,
-      result: this.on.modified.success
+      result: msg.result
     } : {
       done: msg.done,
       result: `${this.on.modified.fail} : ${msg.result}`

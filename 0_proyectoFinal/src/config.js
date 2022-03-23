@@ -6,7 +6,7 @@ module.exports.endpoints = {
 
 
 module.exports.container = {
-	provider : "mongodb", //Available -> file / mongodb / firebase
+	provider : "firebase", //Available -> file / mongodb / firebase
   mongodb  : {
     host : process.env.MONGODB_CONNECTION,
     collection: {
