@@ -1,13 +1,16 @@
 const mongoose = require('mongoose'),
-      model = require('./models/cart.model.js'),
+      { Schema } = require('mongoose'),
       { container } = require('../../config'),
-      collection = container.mongodb.collection.cart
+      host = container.mongodb.host
+  
+let model = require('./models/cart.model.js')
+
 
 class Cart {
-  constructor(conexion = false) {
-    this.conexion = conexion
-    if (!conexion) {
-      throw 'Error: Invalid mongodb conexion path'
+  constructor(id = false) {
+    this.id = id
+    if (!id) {
+      throw 'Error: Invalid mongodb id path'
     }
 
     this.timestamp = Date.now()
@@ -22,8 +25,8 @@ class Cart {
         fail: 'Algo salió mal! No se pude borrar'
       },
       notFound: {
-        cart: "Producto no encontrado",
-        product: "Carrito no encontrado"
+        cart: "Carrito no encontrado",
+        product: "Producto no encontrado"
       },
       default: {
         success: 'Acción realizada con éxito',
@@ -44,9 +47,11 @@ class Cart {
   }
 
   async init() {
+    console.log('[Mongoose connection] Cart');
     try {
       this.client = mongoose
-      this.db = this.client.connect(this.conexion)
+      this.db = this.client.connect(host)
+      this.model = model
 
       return {done: true, result: 'Connect to mongoose database'}
 
@@ -55,10 +60,28 @@ class Cart {
     }
   }
 
+  async assignCart(id) {
+    const productSchema = new Schema ({
+      name        : { type: String, required: true },
+      price       : { type: Number, required: true },
+      description : { type: String, required: true },
+      sku         : { type: Number, required: true },
+      img         : { type: String, required: true },
+      stock       : { type: Number, required: true },
+      timestamp   : { type: String, required: true }
+    })
+    try {
+      this.model = this.client.model(id, productSchema)
+      return {done: true, result: 'Cart assigned'}
+    } catch (e) {
+      return { done: false, result: e}
+    }
+  }
+
   async syncLocalData() {
     
       try {
-        this.data = await model.find().exec()
+        this.data = await this.model.find().exec()
         return {done: true, result: 'Synced'}
       } catch (e) {
           console.log(e);
@@ -77,21 +100,22 @@ class Cart {
   }
 
   async saveProduct(product) {
-    const new_product = new model(product)
+    const new_product = new this.model(product)
+    let loaded_product
     try {
-      await new_product.save()
+      loaded_product =await new_product.save()
       
     } catch (error) {
         console.log(error);
         return {done: false, result: error}
     }
     await this.syncLocalData()
-    return {done: true, result: this.on.modified.success}
+    return {done: true, result: loaded_product}
   }
   
 
   isProductInContainer = (id) => {
-    if (typeof product_id !== 'number') return false
+    if (!id) return false
 
     const exist = this.data.find(product => product?.id === id) ?
       this.data.find(product => product?.id === id) :
@@ -117,7 +141,7 @@ class Cart {
 
     return msg.done ? {
       done: msg.done,
-      result: this.on.modified.success
+      result: msg.result
     } : {
       done: false,
       result: `${this.on.modified.fail} : ${msg.result}`
@@ -125,9 +149,9 @@ class Cart {
 
   }
 
-   get = async (product_id = false) => {
+   get = async (product_id = -1) => {
     await this.syncLocalData()
-    const result = typeof product_id === 'number' 
+    const result = product_id != -1 
                   ? {
                     done: true,
                     result: this.data.find(product => product?.id === product_id)
@@ -176,22 +200,22 @@ class Cart {
     }
 
     const msg = await this.saveProduct(newProduct)
-    this.syncLocalData(this.conexion)
+    this.syncLocalData(host)
 
     return msg.done ? {
       done: msg.done,
-      result: this.on.modified.success
+      result: msg.result
     } : {
       done: msg.done,
       result: `${this.on.modified.fail} : ${msg.result}`
     }
   }
 
-  async delete (product_id = false) {
+  async delete (product_id = -1) {
     
-    if ( product_id === false) {
+    if ( product_id == -1) {
       try {
-        await this.client.connection.db.dropCollection(collection)
+        await this.client.connection.db.dropCollection(this.id)
         delete this.data;
         return {done: true, result: this.on.deleted.success}
       } catch (error) {
@@ -208,7 +232,7 @@ class Cart {
 
     delete this.data[index]
     try {
-      await model.find({ _id: product_id }).remove().exec();
+      await this.model.find({ _id: product_id }).remove().exec();
       return { done: true, result: this.on.deleted.success }
     } catch (error) {
       return { done: false, result: this.on.deleted.fail + error }

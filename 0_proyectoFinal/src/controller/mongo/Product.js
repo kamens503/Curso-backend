@@ -1,13 +1,13 @@
 const mongoose = require('mongoose'),
       model = require('./models/product.model.js'),
       { container } = require('../../config'),
-      collection = container.mongodb.collection.product
+      host = container.mongodb.host
 
 class Product {
-	constructor(conexion = false) {
-		this.conexion = conexion
-    if (!conexion) {
-      throw 'Error: Invalid mongodb conexion path'
+	constructor(id = false) {
+		this.id = id
+    if (!id) {
+      throw 'Error: Invalid mongodb id path'
     }
 
 		this.on = {
@@ -39,9 +39,11 @@ class Product {
 	}
 
   async init() {
+    console.log('[Mongoose connection] Product');
     try {
       this.client = mongoose
-      this.db = this.client.connect(this.conexion)
+      this.db = this.client.connect(host)
+      this.model = model
 
       return {done: true, result: 'Connect to mongoose database'}
 
@@ -53,7 +55,7 @@ class Product {
   async syncLocalData() {
     
     try {
-      this.data = await model.find().exec()
+      this.data = await this.model.find().exec()
       return {done: true, result: 'Synced'}
     } catch (e) {
         console.log(e);
@@ -72,16 +74,17 @@ class Product {
   }
 
 	async saveProduct(product) {
-    const new_product = new model(product)
+    const new_product = new this.model(product)
+    let loaded_product
     try {
-      await new_product.save()
+      loaded_product = await new_product.save()
       
     } catch (error) {
         console.log(error);
         return {done: false, result: error}
     }
     await this.syncLocalData()
-    return {done: true, result: this.on.modified.success}
+    return {done: true, result: loaded_product}
   }
 
 
@@ -109,11 +112,11 @@ class Product {
     }
     
     const msg = await this.saveProduct(newProduct)
-    this.data = await this.syncLocalData(this.conexion)
+    this.data = await this.syncLocalData()
 
     return msg.done ? {
       done: msg.done,
-      result: this.on.modified.success
+      result: msg.result
     } : {
       done: false,
       result: `${this.on.modified.fail} : ${msg.result}`
@@ -121,12 +124,12 @@ class Product {
 
   }
 
-  get = async (product_id = false) => {
+  get = async (product_id = -1) => {
     await this.syncLocalData()
-    const result = typeof product_id === 'number' 
+    const result = product_id != -1 
                   ? {
                     done: true,
-                    result: this.data.find(product => product?.id === product_id)
+                    result: this.data.find(product => product?._id == product_id)
                   } 
                   : {
                     done: true,
@@ -136,7 +139,7 @@ class Product {
     if (!result.result) {
       return {
         done: false,
-        result: this.on.notFound.product
+        result: `${product_id} ${this.on.notFound}`
       }
     }
     return result
@@ -172,20 +175,20 @@ class Product {
     }
 
     const msg = await this.saveProduct(newProduct)
-    this.syncLocalData(this.conexion)
+    this.syncLocalData()
 
     return msg.done ? {
       done: msg.done,
-      result: this.on.modified.success
+      result: msg.result
     } : {
       done: msg.done,
       result: `${this.on.modified.fail} : ${msg.result}`
     }
   }
 
-  async delete (product_id = false) {
+  async delete (product_id = -1) {
     
-    if ( product_id === false) {
+    if ( product_id == -1) {
       try {
         await mongoose.connection.db.dropCollection(collection)
         delete this.data;
@@ -204,7 +207,7 @@ class Product {
 
     delete this.data[index]
     try {
-      await model.find({ _id: product_id }).remove().exec();
+      await this.model.find({ _id: product_id }).remove().exec();
       return { done: true, result: this.on.deleted.success }
     } catch (error) {
       return { done: false, result: this.on.deleted.fail + error }

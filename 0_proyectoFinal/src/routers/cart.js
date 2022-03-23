@@ -2,100 +2,117 @@
 
 const express = require('express'),
       { Router } = express,
-      { v4: uuidv1 } = require('uuid'),
-      config = require('../config'),
-      Cart = config.controller.file.cart
+      { v4: uuidv1 } = require('uuid')
 
-      user = config.user;
+let   { cart } = require('../dao'),
+      { container : cart_container } = require('../config')
 
-      
 
-/** Cart API component, contains all the CRUD routes
- * @type { Router } 
- * @method post - Path: '/ ' . Add new cart, returns message
- * @method get - Path: ' /:id/productos ' . Returns { Array } all products
- * @method get - Path: ' /:id/productos ' . Returns { Object } single product
- * @method post - Path: ' /:id/productos ' . Add new product, returns product added
- * @method delete - Path: ' /:id/productos/:idProduct ' . Delete product, returns message
- * @method delete - Path: ' /:id ', Delete cart, returns message
- * 
- * */      
 const cartApi = Router()
 
+//Middlewares
 cartApi.use(express.json());
-cartApi.use(express.urlencoded({extended : true}));
+cartApi.use(express.urlencoded({extended : true}))
+
+//Middleware - Init cart
+cartApi.use( (req,res,next) => {
+  try {
+    cart.init()
+    return next()
+
+  } catch (error) {
+    throw `No se pudo iniciar el controller ${error}`
+  }
+})
+
+//Middleware - Assign cart by id
+cartApi.use( (req,res,next) => {
+  const id = req.params.id
+  if (!id) { return next() }
+  
+  cart.assignCart(id)
+      .then( () => {
+        return next()
+      })
+      .catch( e => {
+        return res.status(401).send(e)
+      })
+})
+
+
 
 // Carrito  -- /api/
-cartApi.post('/', (req, res) => {
+cartApi.post('/', async (req, res) => {
     const id = uuidv1()
+  console.log(id);
 
-    const cart = new Cart(id, user.getName())
-    msg = cart.get(user.can('read','cart'))
+    const msg = await cart.assignCart(id)
+
     if (!msg.done) {
-        res.status(401).send(msg.result)
+        return res.status(401).send(msg.result)
     }
-    res.status(200).send(id)
+    return res.status(200).send(id)
 });
 
-cartApi.get('/:id/productos', (req, res) => {
-    const id = req.params.id
-
-    const cart = new Cart(id, user.getName())
-    msg = cart.get(user.can('read','cart'))
-    if (!msg.done) {
-        res.status(401).send(msg.result)
-    }
-    res.status(200).send(msg.result)
+cartApi.get('/:id/productos', async(req, res) => {
+  const msg = await cart.get()
+  if (!msg.done) {
+    return res.status(401).send(msg.result)
+  }
+  res.status(200).send(msg.result)
 });
 
-cartApi.get('/:id/productos/:idProduct', (req, res) => {
-    const id = req.params.id
-    const idProduct = parseInt(req.params.idProduct)
+cartApi.get('/:id/productos/:idProduct', async (req, res) => {
 
+  let idProduct
+  if (cart_container == 'file') {
+    idProduct = parseInt(req.params.idProduct)
+  } else {
+    idProduct = req.params.idProduct
+  }
 
-    const cart = new Cart(id, user.getName())
-    msg = cart.get(user.can('read','cart'),idProduct)
-    if (msg.status) {
-        res.status(401).send(msg.result)
-    }
-    res.status(200).send(msg.result)
+  const msg = await cart.get(idProduct)
+  if (msg.status) {
+    return res.status(401).send(msg.result)
+  }
+  return res.status(200).send(msg.result)
 });
 
-cartApi.post('/:id/productos', (req, res) => {
+cartApi.post('/:id/productos', async (req, res) => {
     const newProduct = req.body
 
     if (!newProduct) {
-        res.status(400).send('Error, debe usar body, no query')
+        res.status(400).send('Error: No se pudo recibir los datos, debe enviar json en el body del pedido')
     }
 
-
-    const id = req.params.id
-
-    const cart = new Cart(id, user.getName())
-    msg = cart.create(user.can('create','product'), newProduct)
-
+    const msg = await cart.addProduct(newProduct)
     if (!msg.done) {
-        res.status(500).send(msg.result)
+      return res.status(500).send(msg.result)
     }
-    res.status(200).send(msg.result)
+    return res.status(200).send(msg.result)
 });
 
-cartApi.delete('/:id', (req, res) => {
-    const id = req.params.id
-    const cart = new Cart(id, user.getName())
-    msg = cart.delete(user.can('delete','product'), 'ALL')
-    res.send(msg)
+cartApi.delete('/:id', async (req, res) => {
+    const msg = await cart.delete()
+    if (!msg.done) {
+      return res.status(401).send(msg.result)
+    }
+    return res.status(200).send(msg.result)
 });
 
-cartApi.delete('/:id/productos/:idProduct', (req, res) => {
-    const id = req.params.id
-    const idProduct = parseInt(req.params.idProduct)
+cartApi.delete('/:id/productos/:idProduct',async (req, res) => {
+  let idProduct
+  if (cart_container == 'file') {
+    idProduct = parseInt(req.params.idProduct)
+  } else {
+    idProduct = req.params.idProduct
+  }
 
-    console.log('Endpoint', id, idProduct);
-
-    const cart = new Cart(id, user.getName())
-    msg = cart.delete(user.can('delete','product'), idProduct)
-    res.send(msg)
+  const msg = await cart.delete( idProduct )
+  if (!msg.done) {
+    return res.status(401).send(msg.result)
+  }
+  return res.status(200).send(msg.result)
 });
 
 module.exports = cartApi

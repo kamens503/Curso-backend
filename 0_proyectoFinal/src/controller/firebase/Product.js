@@ -46,6 +46,7 @@ class Product {
   }
 
   async init() {
+    console.log('[Firebase connection] Product');
     try {
       admin.initializeApp({
         credential: admin.credential.cert(test_key)

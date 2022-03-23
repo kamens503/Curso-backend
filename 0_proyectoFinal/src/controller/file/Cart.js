@@ -15,8 +15,8 @@ class Cart {
         fail: 'Algo salió mal! No se pude borrar'
       },
       notFound: {
-        cart: "Producto no encontrado",
-        product: "Carrito no encontrado"
+        cart: "Carrito no encontrado",
+        product: "Producto no encontrado"
       },
       default: {
         success: 'Acción realizada con éxito',
@@ -38,13 +38,14 @@ class Cart {
     
   }
   init() {
+    console.log('[File connection] Cart');
     try {
-      this.data = this.id ? this.getFile(__dirname + `/data/cart_${id}.json`) : {}
+      this.data = this.id ? this.getFile(__dirname + `/data/cart_${this.id}.json`) : {}
       this.path = __dirname + `/data/cart_${this.id}.json`
       return {done: true, result: 'Cart init successfully'}  
     } catch (error) {
       console.log(error);
-      return {done: true, result: 'Cart couldnt init:', error}  
+      return {done: false, result: 'Cart couldnt init:', error}  
     }
     
   }
@@ -77,17 +78,19 @@ class Cart {
   assignCart(id) {
     this.id = id
 
-    if (!this.fs.existsSync(this.path)) return false
-
-    this.data = this.getFile(this.path)
-
-    return true;
+    try {
+      this.data = this.id ? this.getFile(__dirname + `/data/cart_${this.id}.json`) : {}
+      this.path = __dirname + `/data/cart_${this.id}.json`
+      return {done: true, result: id}  
+    } catch (error) {
+      console.log(error);
+      return {done: false, result: 'Cart couldnt init:', error}  
+    }
   }
   
 
   isProductInContainer = (id) => {
-    if (isNaN(id)) return false
-
+    
     const exist = this.data.products.find(product => product?.id === id) ?
       this.data.products.find(product => product?.id === id) :
       false
@@ -98,12 +101,7 @@ class Cart {
     return true
   }
 
-  addProduct = (product, id = false) => {
-    const assigned = id ? this.assignCart(id) : this.assignCart(this.id)
-    if (!assigned) return {
-      done: false,
-      result: this.on.notFound.cart
-    }
+  addProduct = (product) => {
 
     const product_id = this.data.idPool++
 
@@ -120,7 +118,7 @@ class Cart {
 
     return msg.done ? {
       done: msg.done,
-      result: this.on.modified.success
+      result: newProduct
     } : {
       done: false,
       result: msg.result
@@ -128,12 +126,7 @@ class Cart {
 
   }
 
-  get = (product_id = false, id = false) => {
-    const assigned = id ? this.assignCart(id) : this.assignCart(this.id)
-    if (!assigned) return {
-      done: false,
-      result: this.on.notFound.cart
-    }
+  get = (product_id = false) => {
 
     const result = typeof product_id === 'number' 
                   ? {
@@ -166,13 +159,7 @@ class Cart {
                    : { done: false, result: this.on.notFound.product }
   }
 
-  update = (product_id, productObj, id = false) => {
-    const assigned = id ? this.assignCart(id) : this.assignCart(this.id)
-    if (!assigned) return {
-      done: false,
-      result: this.on.notFound.cart
-    }
-
+  update = (product_id) => {
     const index = this.getIndex(product_id).result
     if (typeof index !== 'number') return {done: false, result: this.on.notFound}
     productObj.timestamp = Date.now()
@@ -186,25 +173,19 @@ class Cart {
 
     const msg = this.syncLocalData()
     return msg.done ? {
-      done: msg.done,
-      result: this.on.modified.success
+      done: true,
+      result: this.data.products[index]
     } : {
-      done: msg.done,
+      done: false,
       result: msg.result
     }
   }
 
-  delete = (product_id = false, id = false) => {
-    const assigned = id ? this.assignCart(id) : this.assignCart(this.id)
-    if (!assigned) return {
-      done: false,
-      result: this.on.notFound.cart
-    }
-    if ( product_id === false) {
+  delete = (product_id = -1) => {
+
+    if ( product_id < 0 ) {
       try {
         this.fs.unlinkSync(this.path);
-
-
       } catch (error) {
         return {
           done: false,
@@ -216,7 +197,7 @@ class Cart {
     }
 
     const index = this.getIndex(product_id)
-    if (typeof index !== 'number') return {done: false, result: this.on.notFound.product}
+    if (!index) return {done: false, result: this.on.notFound.product}
 
     delete this.data.products[index]
     const msg = this.syncLocalData()

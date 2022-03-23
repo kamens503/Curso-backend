@@ -3,12 +3,12 @@ require('dotenv').config()
 
 const { controller, container } = require('./config.js')
 
+
 let Cart, 
     Product,
     cartId,
     productId
 
-console.log(`Using ${container.provider} as a provider`);
 switch (container.provider) {
   case 'file':
     Cart      = controller.file.Cart
@@ -19,16 +19,16 @@ switch (container.provider) {
   
   case 'mongodb':
     Cart      = controller.mongodb.Cart
-    Product   = controller.file.Product
-    cartId    = process.env.MONGODB_CONNECTION
-    productId = process.env.MONGODB_CONNECTION
+    Product   = controller.mongodb.Product
+    cartId    = container.mongodb.collection.cart
+    productId = container.mongodb.collection.product
     break;
 
   case 'firebase':
     Cart    = controller.firebase.Cart
     Product = controller.firebase.Product
-    cartId    = process.firebase.collection.cart
-    productId = process.firebase.collection.product
+    cartId    = container.firebase.collection.cart
+    productId = container.firebase.collection.product
     break;
 
   default:
@@ -40,5 +40,6 @@ switch (container.provider) {
 }
 
 
-module.exports.cart    = new Cart(cartId)
+module.exports.cartId   = cartId
+module.exports.cart     = new Cart(cartId)
 module.exports.products = new Product(productId)

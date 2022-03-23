@@ -6,9 +6,9 @@ module.exports.endpoints = {
 
 
 module.exports.container = {
-	provider : "file", //Available -> file / mongodb / firebase
+	provider : "mongodb", //Available -> file / mongodb / firebase
   mongodb  : {
-    host : "mongodb+srv://admin:admin@cluster0.ejm1d.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    host : process.env.MONGODB_CONNECTION,
     collection: {
       // Take into account mongoose convert collections name in plural cuz it hate me (So many hours lost on this...) It WILL break the code if you use a singular name 
       cart    : 'carts',

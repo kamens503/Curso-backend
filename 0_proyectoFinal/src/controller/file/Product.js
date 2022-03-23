@@ -1,6 +1,7 @@
 class Product {
-	constructor(filename) {
-		this.filename = filename;
+	constructor(id) {
+    if (!id) {throw 'Id not defined'}
+		this.id = id;
 		this.fs = require('fs');
 		this.on = {
 			denied: 'No tienes permiso para hacer esta acción',
@@ -33,25 +34,28 @@ class Product {
 	}
 
   init() {
+    console.log('[File connection] Product');
     try {
-      this.data = this.id ? this.getFile(__dirname + `/data/cart_${id}.json`) : {idPool:0, products: []}
-      this.path = __dirname + `/data/cart_${this.id}.json`
-      return {done: true, result: 'Cart init successfully'}  
+      this.data = this.id ? this.getFile(__dirname + `/data/${this.id}.json`) : {idPool:0, products: []}
+      this.path = __dirname + `/data/${this.id}.json`
+      return {done: true, result: `${this.id} init successfully`}  
     } catch (error) {
-      console.log(error);
-      return {done: true, result: 'Cart couldnt init:', error}  
+      throw `Error> Couldnt init product: ${error}`
     }
     
   }
 
-  assignContainer(name) {
-    this.filename = name
+  assignContainer(id) {
+    this.id = id
 
-    if (!this.fs.existsSync(this.path)) return false
-
-    this.data = this.getFile(this.path)
-
-    return true;
+    try {
+      this.data = this.id ? this.getFile(__dirname + `/data/cart_${this.id}.json`) : {}
+      this.path = __dirname + `/data/cart_${this.id}.json`
+      return {done: true, result: id}  
+    } catch (error) {
+      console.log(error);
+      return {done: false, result: 'Cart couldnt init:', error}  
+    }
   }
   
   syncLocalData = () => {
@@ -80,7 +84,6 @@ class Product {
 
 
   isProductInContainer = (id) => {
-    if (isNaN(id)) return false
 
     const exist = this.data.products.find(product => product?.id === id) ?
       this.data.products.find(product => product?.id === id) :
@@ -108,7 +111,7 @@ class Product {
 
     return msg.done ? {
       done: msg.done,
-      result: this.on.modified.success
+      result: newProduct
     } : {
       done: false,
       result: msg.result
@@ -158,13 +161,13 @@ class Product {
 
 		const msg = this.syncLocalData();
 		return msg.done
-			? { done: msg.done, result: this.on.modified.success }
+			? { done: msg.done, result: 	this.data.products[index] }
 			: { done: msg.done, result: msg.result };
 	};
 
-	delete = (product_id = false) => {
+	delete = (product_id = -1) => {
     //Delete all cart if empty
-		if ( product_id === false && typeof product_id !== 'number') {
+		if ( product_id == -1 ) {
       try {
         this.fs.unlinkSync(this.path);
 

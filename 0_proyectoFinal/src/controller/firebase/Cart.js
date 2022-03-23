@@ -5,11 +5,11 @@ const admin = require("firebase-admin"),
 
 
 class Cart {
-  constructor(name = false) {
-    if (typeof name !== 'string') {
-      throw 'Error: Invalid collection name'
+  constructor(id = false) {
+    if (typeof id !== 'string') {
+      throw 'Error: Invalid collection id'
     }
-		this.name = name
+		this.id = id
     this.timestamp = Date.now()
     this.on = {
       denied: "No tienes permiso para hacer esta acción",
@@ -46,12 +46,14 @@ class Cart {
   }
 
   async init() {
+    console.log('[Firebase connection] Cart');
+
     try {
       admin.initializeApp({
         credential: admin.credential.cert(test_key)
       });
-      this.db =  await admin.firestore()
-      this.collection = await this.db.collection(this.name)
+      this.db =  admin.firestore()
+      this.collection = this.db.collection(this.id)
       await this.syncLocalData()
 
       return { done: true, result: 'Cart init sucessfully'}
@@ -59,6 +61,17 @@ class Cart {
       return { done: false, result: error}
     }
     
+  }
+
+  async assignCart(id) {
+    try {
+      this.collection = this.db.collection(this.id)
+      await this.syncLocalData()
+
+      return { done: true, result: id}
+    } catch (error) {
+      return { done: false, result: error}
+    }
   }
 
   async syncLocalData() {
@@ -84,6 +97,7 @@ class Cart {
   }
 
   async saveProduct(product) {
+
     const new_product = product
     new_product.id = uuidv1()
     try {
@@ -99,7 +113,6 @@ class Cart {
   
 
   isProductInContainer = (id) => {
-    if (typeof product_id !== 'number') return false
 
     const exist = this.data.find(product => product?.id === id) ?
       this.data.find(product => product?.id === id) :
