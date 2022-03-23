@@ -34,7 +34,7 @@ class Product {
 
   init() {
     try {
-      this.data = id ? this.getFile(__dirname + `/data/cart_${id}.json`) : {}
+      this.data = this.id ? this.getFile(__dirname + `/data/cart_${id}.json`) : {idPool:0, products: []}
       this.path = __dirname + `/data/cart_${this.id}.json`
       return {done: true, result: 'Cart init successfully'}  
     } catch (error) {
@@ -115,16 +115,16 @@ class Product {
     }
 	};
 
-	get = (product_id) => {
+	get = (product_id = false) => {
     const result = typeof product_id === 'number' 
-    ? {
-      done: true,
-      result: this.data.products.find(product => product?.id === product_id)
-    } 
-    : {
-      done: true,
-      result: this.data.products
-    }
+                    ? {
+                      done: true,
+                      result: this.data.products.find(product => product?.id === product_id)
+                    } 
+                    : {
+                      done: true,
+                      result: this.data
+                    }
 
     if (!result.result) {
     return {

@@ -1,6 +1,7 @@
 class Cart {
   constructor(id = false) {
-    this.id = id ? id : ''
+    if (!id) {throw 'No valid Id'}
+    this.id = id
     this.fs = require('fs')
     this.timestamp = Date.now()
     this.on = {
@@ -38,7 +39,7 @@ class Cart {
   }
   init() {
     try {
-      this.data = id ? this.getFile(__dirname + `/data/cart_${id}.json`) : {}
+      this.data = this.id ? this.getFile(__dirname + `/data/cart_${id}.json`) : {}
       this.path = __dirname + `/data/cart_${this.id}.json`
       return {done: true, result: 'Cart init successfully'}  
     } catch (error) {

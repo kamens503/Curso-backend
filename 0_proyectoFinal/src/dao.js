@@ -8,6 +8,7 @@ let Cart,
     cartId,
     productId
 
+console.log(`Using ${container.provider} as a provider`);
 switch (container.provider) {
   case 'file':
     Cart      = controller.file.Cart
@@ -39,5 +40,5 @@ switch (container.provider) {
 }
 
 
-module.exports.Cart    = new Cart(cartId)
-module.exports.Product = new Product(productId)
+module.exports.cart    = new Cart(cartId)
+module.exports.products = new Product(productId)
