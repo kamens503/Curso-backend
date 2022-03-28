@@ -2,10 +2,9 @@
 
 require('dotenv').config();
 const { container } = require('../../src/config.js'),
-	Product         = require('../../src/controller/firebase/Product'),
-	products        = new Product(container.mongodb.host),
-    { faker } = require('@faker-js/faker')
-
+	Product = require('../../src/controller/firebase/Product'),
+	products = new Product(container.mongodb.host),
+	{ faker } = require('@faker-js/faker');
 
 describe(' [ Firebase ] My products works if', () => {
 	it('Can init container', async () => {
@@ -26,13 +25,13 @@ describe(' [ Firebase ] My products works if', () => {
 
 	it('Can add product to products', async () => {
 		const product = {
-			name        : faker.commerce.product(),
-			description : faker.commerce.productDescription(),
-			price       : faker.commerce.price(),
-			stock       : faker.datatype.number(),
-			img         : faker.image.imageUrl(),
-			timestamp   : faker.time.recent(),
-			sku         : faker.datatype.number(),
+			name: faker.commerce.product(),
+			description: faker.commerce.productDescription(),
+			price: faker.commerce.price(),
+			stock: faker.datatype.number(),
+			img: faker.image.imageUrl(),
+			timestamp: faker.time.recent(),
+			sku: faker.datatype.number(),
 		};
 		return products
 			.addProduct(product)
@@ -46,13 +45,13 @@ describe(' [ Firebase ] My products works if', () => {
 
 	it('Can add another product', async () => {
 		const product = {
-			name        : faker.commerce.product(),
-			description : faker.commerce.productDescription(),
-			price       : faker.commerce.price(),
-			stock       : faker.datatype.number(),
-			img         : faker.image.imageUrl(),
-			timestamp   : faker.time.recent(),
-			sku         : faker.datatype.number(),
+			name: faker.commerce.product(),
+			description: faker.commerce.productDescription(),
+			price: faker.commerce.price(),
+			stock: faker.datatype.number(),
+			img: faker.image.imageUrl(),
+			timestamp: faker.time.recent(),
+			sku: faker.datatype.number(),
 		};
 		return products
 			.addProduct(product)
