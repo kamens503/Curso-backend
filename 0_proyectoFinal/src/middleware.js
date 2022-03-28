@@ -88,19 +88,27 @@ module.exports.validateNewProduct = (req, res, next) => {
 // eslint-disable-next-line no-unused-vars
 module.exports.validateProductChange = (req, res, next) => {
 	const object = req.body;
-	let incorrect = false;
+	const msg = 'Error: Algunos o todos los datos son incorrectos';
 
-	incorrect =
-		typeof object.name != 'string' ||
-		typeof object.description != 'string' ||
-		typeof object.img != 'string' ||
-		typeof object.price != 'number' ||
-		typeof object.stock != 'number';
+	if(object.name && typeof object.name != 'string'){
+        return res.status(400).send(msg);
+    }
 
-	if (incorrect) {
-		const msg = 'Error: Algunos o todos los datos son incorrectos';
-		return res.status(400).send(msg);
-	}
+    if(object.description && typeof object.description != 'string'){
+        return res.status(400).send(msg);
+    }
+
+    if(object.img && typeof object.img != 'string'){
+        return res.status(400).send(msg);
+    }
+
+    if(object.price && typeof object.price != 'number'){
+        return res.status(400).send(msg);
+    }
+
+    if(object.stock && typeof object.stock != 'number'){
+        return res.status(400).send(msg);
+    }
 
 	next();
 };

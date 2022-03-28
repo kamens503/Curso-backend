@@ -204,6 +204,9 @@ class Cart {
 
 	async update(product_id, productObj) {
 		const index = this.getIndex(product_id).result;
+		if (typeof index == 'number')
+			return { done: false, result: this.on.notFound.product };
+
 		productObj.timestamp = Date.now();
 
 		const newProduct = {

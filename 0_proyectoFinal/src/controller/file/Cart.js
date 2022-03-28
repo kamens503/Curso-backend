@@ -1,3 +1,4 @@
+
 /* eslint-disable no-undef */
 class Cart {
 	constructor(id = false) {
@@ -83,12 +84,12 @@ class Cart {
 
 	assignCart(id) {
 		this.id = id;
-
+        this.path = __dirname + `/data/cart_${this.id}.json`
+        console.log({path: this.path});
 		try {
 			this.data = this.id
-				? this.getFile(__dirname + `/data/cart_${this.id}.json`)
+				? this.getFile(this.path)
 				: {};
-			this.path = __dirname + `/data/cart_${this.id}.json`;
 			return { done: true, result: id };
 		} catch (error) {
 			console.log(error);
@@ -132,13 +133,13 @@ class Cart {
             };
 	};
 
-	get = (product_id = false) => {
+	get = (product_id = -1) => {
 		const result =
-			typeof product_id === 'number'
+			product_id != -1
 				? {
 						done: true,
 						result: this.data.products.find(
-							(product) => product?.id === product_id
+							(product) => product?.id == product_id
 						),
                 }
 				: {
@@ -156,7 +157,7 @@ class Cart {
 	};
 
 	getIndex = (id) => {
-		const result = this.data.products.findIndex((product) => product.id === id);
+		const result = this.data.products.findIndex((product) => product.id == id);
 		return result;
 	};
 
@@ -191,8 +192,12 @@ class Cart {
             };
 	};
 
+    disconnect = () => {
+        return {done: true}
+    }
+
 	delete = (product_id = -1) => {
-		if (product_id < 0) {
+		if (product_id == -1) {
 			try {
 				this.fs.unlinkSync(this.path);
 			} catch (error) {
@@ -206,7 +211,8 @@ class Cart {
 		}
 
 		const index = this.getIndex(product_id);
-		if (!index) return { done: false, result: this.on.notFound.product };
+        console.log(index);
+		if (typeof index != 'number') return { done: false, result: this.on.notFound.product };
 
 		delete this.data.products[index];
 		const msg = this.syncLocalData();

@@ -122,9 +122,9 @@ class Product {
             };
 	};
 
-	get = (product_id = false) => {
+	get = (product_id = -1) => {
 		const result =
-			typeof product_id === 'number'
+			product_id != -1
 				? {
 						done: true,
 						result: this.data.products.find(
@@ -146,7 +146,7 @@ class Product {
 	};
 
 	getIndex = (id) => {
-		const result = this.data.products.findIndex((product) => product.id === id);
+		const result = this.data.products.findIndex((product) => product.id == id);
 		return result;
 	};
 
@@ -172,6 +172,10 @@ class Product {
 			? { done: msg.done, result: this.data.products[index] }
 			: { done: msg.done, result: msg.result };
 	};
+
+    disconnect = () => {
+        return {done: true}
+    }
 
 	delete = (product_id = -1) => {
 		//Delete all cart if empty

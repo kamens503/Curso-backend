@@ -4,7 +4,7 @@ module.exports.endpoints = {
 };
 
 module.exports.container = {
-	provider: 'firebase', //Available -> file / mongodb / firebase
+	provider: 'file', //Available -> file / mongodb / firebase
 	mongodb: {
 		// eslint-disable-next-line no-undef
 		host: process.env.MONGODB_CONNECTION,

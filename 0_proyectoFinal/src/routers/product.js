@@ -10,9 +10,9 @@ const productApi = Router();
 productApi.use(express.json());
 productApi.use(express.urlencoded({ extended: true }));
 
-productApi.use((req, res, next) => {
+productApi.use( async (req, res, next) => {
 	try {
-		products.init();
+		await products.init();
 		return next();
 	} catch (error) {
 		throw `No se pudo iniciar el controller ${error}`;
@@ -23,6 +23,8 @@ productApi.use((req, res, next) => {
 productApi.get('/', async (req, res) => {
 	msg = await products.get();
 	if (!msg.done) {
+        const disc =await products.disconnect()
+        console.log(disc);
 		return res.status(401).send(msg.result);
 	}
 	return res.status(200).send(msg.result);
@@ -41,6 +43,7 @@ productApi.get('/:id', async (req, res) => {
 	if (!msg.done) {
 		return res.status(401).send(msg.result);
 	}
+    await products.disconnect()
 	return res.status(200).send(msg.result);
 });
 
@@ -48,14 +51,17 @@ productApi.post('/', validateNewProduct, async (req, res) => {
 	const newProduct = req.body;
 
 	if (!newProduct) {
+        await products.disconnect()
 		return res.status(400).send('Error, debe usar body, no query');
 	}
 	msg = await products.addProduct(newProduct);
 
 	if (!msg.done) {
+        await products.disconnect()
 		return res.status(500).send(msg.result);
 	}
-	res.status(200).send(msg.result);
+    await products.disconnect()
+	return res.status(200).send(msg.result);
 });
 
 productApi.put('/:id', validateProductChange, async (req, res) => {
@@ -68,8 +74,10 @@ productApi.put('/:id', validateProductChange, async (req, res) => {
 	const newProduct = req.body;
 	msg = await products.update(id, newProduct);
 	if (!msg.done) {
+        await products.disconnect()
 		return res.status(500).send(msg.result);
 	}
+    await products.disconnect()
 	return res.status(200).send(msg.result);
 });
 
@@ -82,8 +90,10 @@ productApi.delete('/:id', async (req, res) => {
 	}
 	msg = await products.delete(id);
 	if (!msg.done) {
+        await products.disconnect()
 		return res.status(500).send(msg.result);
 	}
+    await products.disconnect()
 	return res.status(200).send(msg.result);
 });
 

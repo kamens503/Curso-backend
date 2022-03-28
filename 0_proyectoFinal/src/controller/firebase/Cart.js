@@ -67,6 +67,7 @@ class Cart {
 
 			return { done: true, result: id };
 		} catch (error) {
+			console.log(error);
 			return { done: false, result: error };
 		}
 	}
@@ -95,9 +96,7 @@ class Cart {
 	async saveProduct(product) {
 		const new_product = product;
 		try {
-			await this.collection
-				.doc(new_product.id)
-				.set(new_product);
+			await this.collection.doc(new_product.id).set(new_product);
 		} catch (error) {
 			console.log(error);
 			return { done: false, result: error };
@@ -142,7 +141,7 @@ class Cart {
 	get = async (product_id = -1) => {
 		await this.syncLocalData();
 		const result =
-			typeof product_id !== -1
+			product_id !== -1
 				? {
 						done: true,
 						result: this.data.find((product) => product?.id === product_id),
@@ -151,6 +150,8 @@ class Cart {
 						done: true,
 						result: this.data,
                 };
+
+		console.log(result);
 
 		if (!result.result) {
 			return {
@@ -175,6 +176,9 @@ class Cart {
 
 	async update(product_id, productObj) {
 		const index = this.getIndex(product_id);
+
+		if (typeof index == 'number')
+			return { done: false, result: this.on.notFound.product };
 		productObj.timestamp = Date.now();
 
 		const newProduct = {
@@ -196,7 +200,7 @@ class Cart {
 	}
 
 	async delete(product_id = -1) {
-		if (product_id <= -1) {
+		if (product_id == -1) {
 			console.log('Warning: Deleting all data');
 			try {
 				const documents = await this.collection.get();
