@@ -1,32 +1,31 @@
 module.exports.endpoints = {
-	productEndpoint : '/api/productos',
-	cartEndpoint    : '/api',
+	productEndpoint: '/api/productos',
+	cartEndpoint: '/api',
 };
 
-
-
 module.exports.container = {
-	provider : "firebase", //Available -> file / mongodb / firebase
-  mongodb  : {
-    host : process.env.MONGODB_CONNECTION,
-    collection: {
-      // Take into account mongoose convert collections name in plural cuz it hate me (So many hours lost on this...) It WILL break the code if you use a singular name 
-      cart    : 'carts',
-      product : 'products'
-    },
-  },
-  file : {
-    name: {
-      cart    : 'default',
-      product : 'products'
-    }
-  },
-  firebase : {
-    collection: {
-      cart    : 'carts',
-      product : 'products'
-    }
-  }
+	provider: 'firebase', //Available -> file / mongodb / firebase
+	mongodb: {
+		// eslint-disable-next-line no-undef
+		host: process.env.MONGODB_CONNECTION,
+		collection: {
+			// Take into account mongoose convert collections name in plural cuz it hate me (So many hours lost on this...) It WILL break the code if you use a singular name
+			cart: 'carts',
+			product: 'products',
+		},
+	},
+	file: {
+		name: {
+			cart    : 'default',
+			product : 'products',
+		},
+	},
+	firebase: {
+		collection: {
+			cart    : 'carts',
+			product : 'products',
+		},
+	},
 };
 
 module.exports.controller = {
@@ -42,9 +41,9 @@ module.exports.controller = {
 		Product : require('./controller/mongo/Product'),
 		Cart    : require('./controller/mongo/Cart'),
 	},
-	user : {
-    controller : require('./controller/User'),
-    admin      : true,
-    name       : 'Miguel'
-  },
+	user: {
+		controller : require('./controller/User'),
+		admin      : true,
+		name       : 'Miguel',
+	},
 };
