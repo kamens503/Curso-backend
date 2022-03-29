@@ -32,8 +32,20 @@
                 <div id="history" class="w-full h-80 bg-slate-100 overflow-auto"></div>
                 <span class="h-10"></span>
                 <form id="form">
-                    <label for="mail">Corre Electrónico</label><br>
-                    <input type="mail" name="mail" id="mail" class="mb-2">
+                    <label for="name">Name</label><br>
+                    <input type="text" name="name" id="name" class="m-2">
+                    <br>
+                    <label for="last_name">Apellido</label><br>
+                    <input type="text" name="last_name" id="last_name" class="m-2">
+                    <br>
+                    <label for="age">Edad</label><br>
+                    <input type="number" name="age" id="age" class="m-2">
+                    <br>
+                    <label for="alias">Alias</label><br>
+                    <input type="text" name="alias" id="alias" class="m-2">
+                    <br>
+                    <label for="avatar">Avatar</label><br>
+                    <input type="text" name="avatar" id="avatar" class="m-2">
                     <br>
                     <label for="msg" >Mensaje</label><br>
                     <textarea name="msg" id="msg" class="w-full " rows="3"></textarea>
@@ -43,6 +55,9 @@
             </div>
         </article>   
     </body>
+    <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/index.js"></script>
 </html>
 
 <style>
