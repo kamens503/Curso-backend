@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./includes/header'); %>
+<body>
+    <%- include('./includes/nav'); %>
+    <% status = data ? data : ""; %>
+    <form class="bg-slate-800 mx-auto text-center w-1/5" action="/api/productos" method="post">
+        <h2 class="font-bold text-white py-5">Cargar Producto nuevo</h2>
+        <input class="inline-block my-2" type="text" name="title" placeholder="Título">
+        <br>
+        <input class="inline-block my-2" type="number" name="price" placeholder="Precio">
+        <br>
+        <input class="inline-block my-2" type="url" name="thumbnail" placeholder="Url de la imagen">
+        <br>
+        <input class="inline-block my-2 text-color-black bg-white px-10 py-1 mb-5" type="submit" value="Enviar">
+        <br>
+        <h5 class="text-center text-emerald-300 pb-5"><%- status %></h5>
+    </form>
+</body>
+</html>
