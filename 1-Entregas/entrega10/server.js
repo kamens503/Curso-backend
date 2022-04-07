@@ -1,4 +1,4 @@
-TODO: Add login functionality, add mongo Atlas connection 
+//TODO: Add login functionality, add mongo Atlas connection 
 
 const express = require('express'),
 	//Server
