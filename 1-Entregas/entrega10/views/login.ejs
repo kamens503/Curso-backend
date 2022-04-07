@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+	<%- include('./includes/header'); %>
+
+	<body>
+        <%- include('./includes/nav'); %>
+		<section class="bg-slate-800 w-1/6 flex flex-col p-12 mx-auto">
+			<h1 class="font-bold text-white">Login de Usuario</h1>
+			<br />
+			<form action="/login" method="post" autocomplete="off">
+				<label for="name" class="text-white mb-2 block">Ingrese su nombre</label>
+				<input id="name" class="" type="text" name="name" required />
+				<button class="font-bold text-slate-700 py-1 px-3 bg-white mt-5">Enviar</button>
+			</form>
+		</section>
+	</body>
+</html>

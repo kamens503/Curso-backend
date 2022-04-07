@@ -1,5 +1,4 @@
-const { default: knex } = require('knex');
-const { send } = require('process');
+TODO: Add login functionality, add mongo Atlas connection 
 
 const express = require('express'),
 	//Server
@@ -18,10 +17,28 @@ Chat = require('./Contenedor');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+//Sessions
+app.use(session({
+    // store: MongoStore.create({ mongoUrl: config.mongoLocal.cnxStr }),
+    store: MongoStore.create({ mongoUrl: config.mongoRemote.cnxStr }),
+    secret: 'shhhhhhhhhhhhhhhhhhhhh!',
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    cookie: {
+        maxAge: 60000
+    }
+}))
+
 const chat = new Chat('chat');
 
 app.set('views', './views');
 app.set('view engine', 'ejs');
+
+app.get('/login', (req, res) => {
+    res.render('login.ejs')
+})
 
 app.get('/api/productos-test', (req, res) => {
 	const testProducts = [];
